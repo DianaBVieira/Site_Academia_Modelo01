@@ -48,6 +48,10 @@ Mantenha esta lista ao publicar o site.
 As imagens foram redimensionadas e convertidas para WebP (3,3 MB → 615 KB no total).
 Redimensionar e converter formato é permitido pelas licenças CC BY e CC BY-SA.
 
+`assets/utopia.webp` fica de fora dessa lista: é o ícone da própria **Utopia
+Desenvolvimentos**, usado na assinatura do rodapé. Ativo de marca da autora do
+site, sem exigência de atribuição de terceiros.
+
 > **Atenção:** as duas fotos com CC BY-SA 4.0 (`sala-principal`, `sala-mobilidade`) exigem
 > que qualquer versão modificada *da própria imagem* seja redistribuída sob a mesma licença.
 > Isso não afeta o código do site. Se preferir evitar a cláusula, troque essas duas por

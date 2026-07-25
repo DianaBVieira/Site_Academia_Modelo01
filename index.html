@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vértice — Studio de Performance | Projeto demonstrativo</title>
+<meta name="description" content="Vértice Studio de Performance: treino de força, mobilidade e condicionamento com avaliação física e prescrição individual. Projeto demonstrativo criado pela Utopia Desenvolvimentos.">
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#0A0A0C">
+<!-- ícone embutido: sob file:// o Chrome recusa carregar SVG externo como favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%230A0A0C'/%3E%3Cpath%20d='M32,12L55,54H44.5L32,32.5Z'%20fill='%23FF4E1B'/%3E%3Cpath%20d='M32,12L32,32.5L19.5,54H9Z'%20fill='%23FF6B3D'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Vértice — Studio de Performance">
+<meta property="og:description" content="Projeto demonstrativo de site para academia, criado pela Utopia Desenvolvimentos.">
+<meta property="og:locale" content="pt_BR">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   VÉRTICE — DESIGN SYSTEM
+   Camadas: primitivo → semântico → componente.
+   Nenhum valor cru aparece fora da camada 1.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── CAMADA 1 · PRIMITIVOS ─────────────────────────────────────────────── */
+:root{
+  /* Cor · canais RGB para permitir alpha em qualquer ponto */
+  --c-obsidian: 10 10 12;
+  --c-carbon:   19 19 23;
+  --c-slate:    29 29 35;
+  --c-graphite: 58 58 66;
+  --c-ash:     154 150 143;
+  --c-stone:    90 86 80;
+  --c-sand:    220 213 202;
+  --c-bone:    239 234 227;
+  --c-white:   255 255 255;
+  --c-molten:  255  78  27;   /* #FF4E1B — acento sobre escuro */
+  --c-molten-hi:255 107  61;  /* #FF6B3D */
+  --c-molten-deep:179 48 10;  /* #B3300A — acento em texto sobre claro */
+
+  /* Tipografia · escala fluida (clamp), razão ~1.28 */
+  --f-display:'Bricolage Grotesque','Arial Black',Impact,sans-serif;
+  --f-body:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+
+  --t-micro:  .6875rem;
+  --t-xs:     .75rem;
+  --t-sm:     .875rem;
+  --t-base:   1rem;
+  /* Escala fluida. Os máximos (desktop 1440px) são os mesmos de antes; os
+     mínimos foram baixados porque no celular a leitura ficava grande demais.
+     Referência a 390px de largura → 1440px:
+       d1  34px → 104px    d3  24px → 46px
+       d2  28px →  64px    d4  19px → 34px            */
+  --t-lg:     clamp(1rem, .94rem + .28vw, 1.1875rem);
+  --t-xl:     clamp(1.125rem, 1rem + .52vw, 1.5rem);
+  --t-d4:     clamp(1.1875rem, .84rem + 1.43vw, 2.125rem);
+  --t-d3:     clamp(1.5rem, .99rem + 2.1vw, 2.875rem);
+  --t-d2:     clamp(1.75rem, .91rem + 3.43vw, 4rem);
+  --t-d1:     clamp(2.125rem, .5rem + 6.67vw, 6.5rem);
+
+  --lead-tight:.94;
+  --lead-snug: 1.12;
+  --lead-body: 1.65;
+  --track-tight:-.02em;
+  --track-wide: .22em;
+
+  /* Espaçamento · escala 4px */
+  --s-1:.25rem;  --s-2:.5rem;   --s-3:.75rem;  --s-4:1rem;
+  --s-5:1.5rem;  --s-6:2rem;    --s-7:2.5rem;  --s-8:3rem;
+  --s-9:4rem;    --s-10:5rem;
+  --s-section: clamp(4.5rem, 3rem + 6.5vw, 9rem);
+  --s-gutter:  clamp(1.25rem, .7rem + 2vw, 2.5rem);
+  --w-max: 78rem;
+
+  /* Raio */
+  --r-sm:.5rem; --r-md:.875rem; --r-lg:1.25rem;
+  --r-xl: clamp(1.25rem,.9rem + 1.4vw,2rem);
+  --r-panel: clamp(1.75rem,1.1rem + 2.6vw,3rem);
+  --r-full:999px;
+
+  /* Movimento */
+  --e-out: cubic-bezier(.16,1,.3,1);
+  --e-inout: cubic-bezier(.65,0,.35,1);
+  --d-fast:160ms; --d-base:320ms; --d-slow:720ms;
+
+  /* Elevação */
+  --sh-sm: 0 2px 8px rgb(var(--c-obsidian)/.3);
+  --sh-md: 0 12px 32px -8px rgb(var(--c-obsidian)/.55);
+  --sh-lg: 0 32px 64px -16px rgb(var(--c-obsidian)/.7);
+  --sh-glow: 0 12px 40px -10px rgb(var(--c-molten)/.55);
+
+  --nav-h: 4.5rem;
+}
+
+/* ── CAMADA 2 · SEMÂNTICOS ─────────────────────────────────────────────────
+   Contrastes verificados (WCAG 2.1, texto normal exige 4.5:1):
+     bone   sobre obsidian .......... 16.5:1  AAA
+     ash    sobre obsidian ........... 6.7:1  AA
+     molten sobre obsidian ............ 6.0:1  AA
+     obsidian sobre bone ............. 16.5:1  AAA
+     stone  sobre bone ................ 6.1:1  AA
+     molten-deep sobre bone ........... 5.3:1  AA
+     obsidian sobre molten ............ 6.0:1  AA  (texto do botão)
+   ─────────────────────────────────────────────────────────────────────── */
+:root{
+  --bg:            rgb(var(--c-obsidian));
+  --bg-elevated:   rgb(var(--c-carbon));
+  --bg-raised:     rgb(var(--c-slate));
+  --bg-light:      rgb(var(--c-bone));
+  --bg-light-alt:  rgb(var(--c-sand));
+
+  --fg:            rgb(var(--c-bone));
+  --fg-muted:      rgb(var(--c-ash));
+  --fg-on-light:   rgb(var(--c-obsidian));
+  --fg-muted-light:rgb(var(--c-stone));
+
+  --accent:        rgb(var(--c-molten));
+  --accent-hi:     rgb(var(--c-molten-hi));
+  --accent-on-light:rgb(var(--c-molten-deep));
+  --on-accent:     rgb(var(--c-obsidian));
+
+  --line:          rgb(var(--c-bone)/.14);
+  --line-strong:   rgb(var(--c-bone)/.28);
+  --line-light:    rgb(var(--c-obsidian)/.14);
+}
+
+/* ── RESET + BASE ──────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:var(--f-body); font-size:var(--t-base); line-height:var(--lead-body);
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+img,svg{display:block; max-width:100%}
+img{height:auto}
+a{color:inherit; text-decoration:none}
+button{font:inherit; color:inherit; background:none; border:0; cursor:pointer}
+h1,h2,h3,h4{font-family:var(--f-display); font-weight:800; line-height:var(--lead-snug); letter-spacing:var(--track-tight)}
+::selection{background:var(--accent); color:var(--on-accent)}
+section[id]{scroll-margin-top:calc(var(--nav-h) + 1rem)}
+
+/* Anel de foco de duas camadas: visível em fundo claro e escuro */
+:where(a,button,summary,[tabindex]):focus-visible{
+  outline:2px solid var(--accent); outline-offset:3px;
+  box-shadow:0 0 0 5px rgb(var(--c-obsidian)/.85);
+}
+.light :where(a,button,summary):focus-visible{box-shadow:0 0 0 5px rgb(var(--c-bone))}
+
+/* ── UTILITÁRIOS DE LAYOUT ─────────────────────────────────────────────── */
+.wrap{width:100%; max-width:var(--w-max); margin-inline:auto; padding-inline:var(--s-gutter)}
+.section{padding-block:var(--s-section)}
+.light{background:var(--bg-light); color:var(--fg-on-light)}
+.light .muted{color:var(--fg-muted-light)}
+.muted{color:var(--fg-muted)}
+
+.eyebrow{
+  font-size:var(--t-xs); font-weight:600; text-transform:uppercase;
+  letter-spacing:var(--track-wide); line-height:1.4; color:var(--accent);
+  display:flex; align-items:center; gap:var(--s-3);
+}
+.light .eyebrow{color:var(--accent-on-light)}
+.eyebrow::before{content:''; width:1.75rem; height:1px; background:currentColor; flex:none}
+
+.lede{font-size:var(--t-lg); line-height:var(--lead-body); color:var(--fg-muted); max-width:46ch}
+.light .lede{color:var(--fg-muted-light)}
+
+/* ── BOTÕES ────────────────────────────────────────────────────────────── */
+.btn{
+  --btn-bg:var(--accent); --btn-fg:var(--on-accent); --btn-line:transparent;
+  position:relative; display:inline-flex; align-items:center; justify-content:center;
+  gap:var(--s-3); min-height:3rem; padding:.9rem 1.6rem;
+  background:var(--btn-bg); color:var(--btn-fg);
+  border:1px solid var(--btn-line); border-radius:var(--r-full);
+  font-size:var(--t-sm); font-weight:600; letter-spacing:.02em; white-space:nowrap;
+  overflow:hidden; isolation:isolate;
+  transition:transform var(--d-base) var(--e-out), box-shadow var(--d-base) var(--e-out),
+             background-color var(--d-base) var(--e-out), color var(--d-base) var(--e-out),
+             border-color var(--d-base) var(--e-out);
+}
+/* varredura de brilho */
+.btn::after{
+  content:''; position:absolute; inset:0; z-index:-1; transform:translateX(-101%);
+  background:linear-gradient(100deg,transparent 20%,rgb(var(--c-white)/.32) 50%,transparent 80%);
+  transition:transform var(--d-slow) var(--e-out);
+}
+.btn:hover{transform:translateY(-2px); box-shadow:var(--sh-glow)}
+.btn:hover::after{transform:translateX(101%)}
+.btn:active{transform:translateY(0)}
+.btn .arw{transition:transform var(--d-base) var(--e-out)}
+.btn:hover .arw{transform:translate(3px,-3px)}
+
+.btn--ghost{--btn-bg:transparent; --btn-fg:var(--fg); --btn-line:var(--line-strong)}
+.btn--ghost:hover{--btn-bg:rgb(var(--c-bone)); --btn-fg:rgb(var(--c-obsidian)); box-shadow:var(--sh-md)}
+.light .btn--ghost{--btn-fg:var(--fg-on-light); --btn-line:var(--line-light)}
+.light .btn--ghost:hover{--btn-bg:rgb(var(--c-obsidian)); --btn-fg:rgb(var(--c-bone))}
+.btn--lg{min-height:3.5rem; padding:1.1rem 2rem; font-size:var(--t-base)}
+
+/* ── NAVEGAÇÃO ─────────────────────────────────────────────────────────── */
+.nav{
+  position:fixed; inset-inline:0; top:0; z-index:90; height:var(--nav-h);
+  display:flex; align-items:center;
+  transition:background-color var(--d-base) var(--e-out), border-color var(--d-base) var(--e-out),
+             backdrop-filter var(--d-base);
+  border-bottom:1px solid transparent;
+}
+.nav[data-scrolled="true"]{
+  background:rgb(var(--c-obsidian)/.82); border-bottom-color:var(--line);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+}
+.nav__inner{display:flex; align-items:center; justify-content:space-between; gap:var(--s-5); width:100%}
+.brand{display:flex; align-items:center; gap:.7rem; flex:none}
+.brand__mark{width:1.75rem; height:1.75rem; flex:none}
+.brand__name{font-family:var(--f-display); font-weight:800; font-size:1.05rem; letter-spacing:.06em; line-height:1}
+.brand__sub{display:block; font-family:var(--f-body); font-size:.5rem; font-weight:500;
+  letter-spacing:.3em; color:var(--fg-muted); margin-top:.2rem}
+
+.nav__links{display:flex; align-items:center; gap:var(--s-6)}
+.nav__link{position:relative; font-size:var(--t-sm); font-weight:500; color:var(--fg-muted);
+  transition:color var(--d-fast) ease; padding-block:.35rem}
+.nav__link::after{content:''; position:absolute; left:0; bottom:0; width:100%; height:1px;
+  background:var(--accent); transform:scaleX(0); transform-origin:right;
+  transition:transform var(--d-base) var(--e-out)}
+.nav__link:hover{color:var(--fg)}
+.nav__link:hover::after{transform:scaleX(1); transform-origin:left}
+
+.nav__burger{display:none; width:2.75rem; height:2.75rem; border:1px solid var(--line-strong);
+  border-radius:var(--r-full); align-items:center; justify-content:center; flex:none}
+.burger__box{display:block; width:1.1rem; height:.6rem; position:relative}
+.burger__box i{position:absolute; left:0; width:100%; height:1.5px; background:currentColor;
+  border-radius:2px; transition:transform var(--d-base) var(--e-out), opacity var(--d-fast)}
+.burger__box i:nth-child(1){top:0}
+.burger__box i:nth-child(2){bottom:0}
+[aria-expanded="true"] .burger__box i:nth-child(1){transform:translateY(.3rem) rotate(45deg)}
+[aria-expanded="true"] .burger__box i:nth-child(2){transform:translateY(-.3rem) rotate(-45deg)}
+
+.drawer{
+  position:fixed; inset:var(--nav-h) 0 auto; z-index:89;
+  background:rgb(var(--c-carbon)/.98); backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--line);
+  display:grid; grid-template-rows:0fr; transition:grid-template-rows var(--d-base) var(--e-out);
+}
+.drawer[data-open="true"]{grid-template-rows:1fr}
+.drawer__inner{overflow:hidden}
+.drawer__list{display:flex; flex-direction:column; padding:var(--s-4) var(--s-gutter) var(--s-6)}
+.drawer__list a{padding-block:var(--s-4); border-bottom:1px solid var(--line);
+  font-family:var(--f-display); font-size:var(--t-xl); font-weight:700}
+.drawer__list .btn{margin-top:var(--s-5)}
+
+/* ── HERO ──────────────────────────────────────────────────────────────── */
+.hero{position:relative; min-height:100svh; display:flex; align-items:flex-end;
+  padding-top:calc(var(--nav-h) + var(--s-8)); padding-bottom:var(--s-8); overflow:hidden}
+.hero__media{position:absolute; inset:0; z-index:0}
+.hero__media img{width:100%; height:100%; object-fit:cover; object-position:center 40%;
+  filter:grayscale(.35) contrast(1.08) brightness(.55); will-change:transform}
+.hero__scrim{position:absolute; inset:0; z-index:1;
+  background:
+    radial-gradient(120% 80% at 12% 100%, rgb(var(--c-molten)/.22) 0%, transparent 55%),
+    linear-gradient(to top, rgb(var(--c-obsidian)) 4%, rgb(var(--c-obsidian)/.78) 34%, rgb(var(--c-obsidian)/.35) 70%, rgb(var(--c-obsidian)/.6) 100%);
+}
+.grain{position:absolute; inset:0; z-index:2; pointer-events:none; opacity:.05; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.hero__body{position:relative; z-index:3; width:100%}
+.hero h1{font-size:var(--t-d1); line-height:var(--lead-tight); max-width:16ch; margin:0}
+.hero h1 em{font-style:normal; color:var(--accent)}
+
+/* ── MESH TEXT ──────────────────────────────────────────────────────────
+   O <h1> real continua no DOM (leitores de tela e SEO) e define a caixa;
+   o canvas WebGL desenha por cima e distorce as letras conforme o cursor.
+   Sem WebGL2, em toque, ou com movimento reduzido, o <h1> aparece normal.
+   ─────────────────────────────────────────────────────────────────────── */
+.meshwrap{position:relative; margin-top:var(--s-5)}
+/* posição e tamanho do canvas são fixados por JS na caixa exata do <h1> */
+.meshwrap canvas{position:absolute; display:none; pointer-events:none}
+.meshwrap[data-mesh="on"] canvas{display:block}
+.meshwrap[data-mesh="on"] > h1{opacity:0}
+.hero__lede{margin-top:var(--s-5); max-width:44ch}
+.hero__cta{display:flex; flex-wrap:wrap; gap:var(--s-3); margin-top:var(--s-7)}
+
+.hero__stats{display:grid; grid-template-columns:repeat(4,1fr); gap:var(--s-4);
+  margin-top:var(--s-9); padding-top:var(--s-5); border-top:1px solid var(--line)}
+.stat__num{font-family:var(--f-display); font-size:var(--t-d4); font-weight:800; line-height:1;
+  display:flex; align-items:baseline; gap:.1em}
+.stat__suf{color:var(--accent); font-size:.62em}
+.stat__lbl{font-size:var(--t-xs); color:var(--fg-muted); margin-top:.4rem; line-height:1.4}
+
+.scrollcue{position:absolute; z-index:3; right:var(--s-gutter); bottom:var(--s-8);
+  writing-mode:vertical-rl; font-size:var(--t-micro); letter-spacing:var(--track-wide);
+  text-transform:uppercase; color:var(--fg-muted); display:flex; align-items:center; gap:var(--s-3)}
+.scrollcue::after{content:''; width:1px; height:3rem; background:linear-gradient(var(--accent),transparent);
+  animation:cue 2.4s var(--e-inout) infinite}
+@keyframes cue{0%,100%{transform:scaleY(.35); opacity:.4} 50%{transform:scaleY(1); opacity:1}}
+
+/* ── MARQUEE ───────────────────────────────────────────────────────────── */
+.marquee{overflow:hidden; border-block:1px solid var(--line); background:var(--bg-elevated);
+  padding-block:var(--s-4); display:flex; user-select:none}
+.marquee__track{display:flex; flex:none; gap:var(--s-6); padding-right:var(--s-6);
+  animation:slide 34s linear infinite}
+.marquee:hover .marquee__track{animation-play-state:paused}
+@keyframes slide{to{transform:translateX(-100%)}}
+.marquee__item{display:flex; align-items:center; gap:var(--s-6); font-family:var(--f-display);
+  font-size:var(--t-d4); font-weight:700; letter-spacing:var(--track-tight); white-space:nowrap;
+  color:rgb(var(--c-bone)/.24)}
+.marquee__item::after{content:''; width:.5rem; height:.5rem; background:var(--accent);
+  transform:rotate(45deg); flex:none}
+
+/* ── MANIFESTO ─────────────────────────────────────────────────────────── */
+.manifesto__grid{display:grid; gap:var(--s-8); grid-template-columns:1fr}
+.manifesto h2{font-size:var(--t-d2); max-width:18ch}
+.manifesto h2 em{font-style:normal; color:var(--accent-on-light)}
+.manifesto__cols{display:grid; gap:var(--s-6); grid-template-columns:1fr}
+.manifesto__media{display:grid; gap:var(--s-4); grid-template-columns:1fr 1fr; margin-top:var(--s-8)}
+.figure{position:relative; overflow:hidden; border-radius:var(--r-xl); background:var(--bg-raised)}
+.figure img{width:100%; height:100%; object-fit:cover; transition:transform var(--d-slow) var(--e-out)}
+.figure:hover img{transform:scale(1.05)}
+.figure--tall{aspect-ratio:3/4}
+.figure--wide{aspect-ratio:4/3}
+
+/* ── MÉTODO ────────────────────────────────────────────────────────────── */
+.steps{display:grid; gap:var(--s-4); grid-template-columns:1fr; margin-top:var(--s-8)}
+.step{position:relative; padding:var(--s-6); border:1px solid var(--line); border-radius:var(--r-lg);
+  background:var(--bg-elevated); overflow:hidden;
+  transition:border-color var(--d-base) var(--e-out), transform var(--d-base) var(--e-out),
+             background-color var(--d-base) var(--e-out)}
+.step::before{content:''; position:absolute; inset:0; opacity:0; pointer-events:none;
+  background:radial-gradient(90% 70% at 0% 0%, rgb(var(--c-molten)/.16), transparent 60%);
+  transition:opacity var(--d-base) var(--e-out)}
+.step:hover{transform:translateY(-4px); border-color:rgb(var(--c-molten)/.45); background:var(--bg-raised)}
+.step:hover::before{opacity:1}
+.step__n{position:relative; font-family:var(--f-display); font-size:var(--t-d3); font-weight:800;
+  color:rgb(var(--c-bone)/.32); line-height:1;
+  transition:color var(--d-base) var(--e-out)}
+.step:hover .step__n{color:var(--accent)}
+.step h3{position:relative; font-size:var(--t-xl); margin-top:var(--s-4)}
+.step p{position:relative; margin-top:var(--s-3); font-size:var(--t-sm); color:var(--fg-muted)}
+
+/* ── CARROSSEL COVERFLOW ───────────────────────────────────────────────
+   Galeria 3D: o card ativo fica de frente, os vizinhos recuam em
+   perspectiva. Clique, setas, teclado e arraste levam um card ao centro.
+   ─────────────────────────────────────────────────────────────────────── */
+.coverflow{
+  /* menor no celular: sobra mais dos cards vizinhos e o efeito 3D aparece */
+  --cf-w: min(26rem, 64vw);
+  --cf-h: min(26rem, 64vw);
+  --cf-radius: calc(var(--cf-w) * .075);   /* "rounded 3" da referência */
+  --cf-dim: .4;                            /* opacidade 60 → escurece 40% */
+  --cf-dur: .6s;
+  --cf-ease: cubic-bezier(.22,1,.36,1);
+  margin-top:var(--s-8); outline:none;
+}
+.coverflow__stage{
+  position:relative; height:calc(var(--cf-h) + 3rem);
+  display:flex; align-items:center; justify-content:center;
+  perspective:1600px; overflow:hidden; touch-action:pan-y;
+}
+.coverflow__rail{
+  position:relative; width:var(--cf-w); height:var(--cf-h);
+  transform-style:preserve-3d;
+}
+.cf-card{
+  position:absolute; left:50%; top:50%; margin:0;
+  width:var(--cf-w); height:var(--cf-h);
+  border-radius:var(--cf-radius); overflow:hidden;
+  background:var(--bg-elevated); box-shadow:var(--sh-lg);
+  transform-style:preserve-3d; transform-origin:center center;
+  transition:transform var(--cf-dur) var(--cf-ease), opacity var(--cf-dur) var(--cf-ease);
+  cursor:pointer;
+}
+.cf-card img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  user-select:none; -webkit-user-drag:none;
+}
+.cf-card::after{
+  content:''; position:absolute; inset:0; background:rgb(var(--c-obsidian));
+  opacity:var(--cf-dim); pointer-events:none;
+  transition:opacity var(--cf-dur) var(--cf-ease);
+}
+.cf-card[data-active="true"]{cursor:default}
+.cf-card[data-active="true"]::after{opacity:0}
+.coverflow.is-dragging .cf-card{transition:none}
+
+.coverflow__ui{
+  display:flex; align-items:center; gap:var(--s-5);
+  margin-top:var(--s-6); flex-wrap:wrap;
+}
+.cf-btn{
+  width:3rem; height:3rem; flex:none; display:grid; place-items:center;
+  border:1px solid var(--line-strong); border-radius:var(--r-full);
+  transition:background-color var(--d-base) var(--e-out), color var(--d-base) var(--e-out),
+             border-color var(--d-base) var(--e-out), transform var(--d-base) var(--e-out);
+}
+.cf-btn:hover{background:var(--accent); color:var(--on-accent); border-color:transparent; transform:scale(1.06)}
+.cf-info{flex:1 1 16rem; min-width:0}
+.cf-info h3{font-size:var(--t-xl)}
+.cf-info p{font-size:var(--t-sm); color:var(--fg-muted); margin-top:var(--s-2)}
+.cf-dots{display:flex; gap:var(--s-2); flex:none}
+.cf-dot{
+  width:.5rem; height:.5rem; padding:0; border-radius:var(--r-full);
+  background:rgb(var(--c-bone)/.24);
+  transition:background-color var(--d-base) var(--e-out), width var(--d-base) var(--e-out);
+}
+.cf-dot[aria-current="true"]{background:var(--accent); width:1.5rem}
+
+/* ── PLANOS ────────────────────────────────────────────────────────────── */
+.plans{display:grid; gap:var(--s-4); grid-template-columns:1fr; margin-top:var(--s-8); align-items:start}
+.plan{position:relative; padding:var(--s-6); border:1px solid var(--line-light); border-radius:var(--r-xl);
+  background:rgb(var(--c-white)/.5);
+  transition:transform var(--d-base) var(--e-out), box-shadow var(--d-base) var(--e-out),
+             border-color var(--d-base) var(--e-out)}
+.plan:hover{transform:translateY(-4px); box-shadow:var(--sh-md); border-color:var(--fg-on-light)}
+.plan__tag{font-size:var(--t-xs); font-weight:600; letter-spacing:var(--track-wide);
+  text-transform:uppercase; color:var(--fg-muted-light)}
+.plan__price{font-family:var(--f-display); font-size:var(--t-d3); font-weight:800; line-height:1;
+  margin-top:var(--s-4); display:flex; align-items:baseline; gap:.25rem}
+.plan__price span{font-family:var(--f-body); font-size:var(--t-sm); font-weight:500; color:var(--fg-muted-light)}
+.plan ul{list-style:none; padding:0; margin:var(--s-5) 0 var(--s-6); display:grid; gap:var(--s-3)}
+.plan li{display:flex; gap:var(--s-3); font-size:var(--t-sm); align-items:flex-start}
+.plan li svg{flex:none; margin-top:.15rem; color:var(--accent-on-light)}
+.plan .btn{width:100%}
+/* espaço extra no topo para o selo não encostar no nome do plano */
+.plan--featured{background:var(--bg); color:var(--fg); border-color:transparent; box-shadow:var(--sh-lg);
+  padding-top:calc(var(--s-6) + 1.75rem)}
+.plan--featured .plan__tag{color:var(--accent)}
+.plan--featured .plan__price span{color:var(--fg-muted)}
+.plan--featured li svg{color:var(--accent)}
+.plan--featured:hover{border-color:var(--accent)}
+.badge{position:absolute; top:var(--s-5); right:var(--s-5); font-size:var(--t-micro); font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; background:var(--accent); color:var(--on-accent);
+  padding:.35rem .7rem; border-radius:var(--r-full)}
+
+/* ── DEPOIMENTOS ───────────────────────────────────────────────────────── */
+.quotes{display:grid; gap:var(--s-4); grid-template-columns:1fr; margin-top:var(--s-8)}
+.quote{padding:var(--s-6); border:1px solid var(--line); border-radius:var(--r-lg);
+  background:var(--bg-elevated); display:flex; flex-direction:column; gap:var(--s-4)}
+.quote p{font-family:var(--f-display); font-size:var(--t-d4); font-weight:600; line-height:1.28;
+  letter-spacing:var(--track-tight)}
+.quote footer{display:flex; align-items:center; gap:var(--s-3); margin-top:auto}
+.avatar{width:2.5rem; height:2.5rem; border-radius:var(--r-full); background:var(--accent);
+  color:var(--on-accent); display:grid; place-items:center; font-weight:600; font-size:var(--t-sm); flex:none}
+.quote cite{font-style:normal; font-size:var(--t-sm); font-weight:600}
+.quote small{display:block; color:var(--fg-muted); font-size:var(--t-xs); font-weight:400}
+.stars{display:flex; gap:.15rem; color:var(--accent)}
+
+/* ── FAQ ───────────────────────────────────────────────────────────────── */
+.faq{margin-top:var(--s-8); border-top:1px solid var(--line-light)}
+.faq details{border-bottom:1px solid var(--line-light)}
+.faq summary{list-style:none; cursor:pointer; padding-block:var(--s-5); display:flex;
+  align-items:center; justify-content:space-between; gap:var(--s-5);
+  font-family:var(--f-display); font-size:var(--t-lg); font-weight:700;
+  transition:color var(--d-fast) ease}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:hover{color:var(--accent-on-light)}
+.faq summary .ind{flex:none; width:1.5rem; height:1.5rem; position:relative}
+.faq summary .ind::before,.faq summary .ind::after{content:''; position:absolute; inset:50% 0 auto;
+  height:1.5px; background:currentColor; transition:transform var(--d-base) var(--e-out)}
+.faq summary .ind::after{transform:rotate(90deg)}
+.faq details[open] summary .ind::after{transform:rotate(0)}
+.faq__a{padding-bottom:var(--s-5); font-size:var(--t-sm); color:var(--fg-muted-light); max-width:62ch}
+
+/* ── CTA FINAL ─────────────────────────────────────────────────────────── */
+.cta{position:relative; overflow:hidden; border-radius:var(--r-panel); background:var(--bg-elevated);
+  border:1px solid var(--line); padding:clamp(2rem,1rem + 5vw,5rem); text-align:center}
+.cta::before{content:''; position:absolute; inset:0;
+  background:radial-gradient(80% 120% at 50% 120%, rgb(var(--c-molten)/.3), transparent 62%)}
+.cta > *{position:relative}
+.cta h2{font-size:var(--t-d2); max-width:16ch; margin-inline:auto}
+.cta h2 em{font-style:normal; color:var(--accent)}
+.cta .btn{margin-top:var(--s-7)}
+
+/* ── RODAPÉ ────────────────────────────────────────────────────────────── */
+.foot{border-top:1px solid var(--line); padding-block:var(--s-9) var(--s-6)}
+.foot__grid{display:grid; gap:var(--s-7); grid-template-columns:1fr}
+.foot h4{font-family:var(--f-body); font-size:var(--t-xs); font-weight:600; text-transform:uppercase;
+  letter-spacing:var(--track-wide); color:var(--accent); margin-bottom:var(--s-4)}
+.foot p,.foot address,.foot a{font-size:var(--t-sm); color:var(--fg-muted); font-style:normal; line-height:1.8}
+.foot a:hover{color:var(--fg)}
+.foot__bar{margin-top:var(--s-8); padding-top:var(--s-5); border-top:1px solid var(--line);
+  display:flex; flex-direction:column; gap:var(--s-4); font-size:var(--t-xs); color:var(--fg-muted)}
+.demo-note{display:inline-flex; align-items:center; gap:var(--s-2); padding:.4rem .8rem;
+  border:1px solid var(--line-strong); border-radius:var(--r-full); font-size:var(--t-micro);
+  letter-spacing:.08em; text-transform:uppercase}
+.demo-note::before{content:''; width:.4rem; height:.4rem; border-radius:50%; background:var(--accent)}
+/* precisa vencer `.foot p` em especificidade — por isso o seletor composto */
+.foot .wordmark{font-family:var(--f-display); font-weight:800; letter-spacing:var(--track-tight);
+  font-size:clamp(3.5rem,14vw,11rem); line-height:.85; color:rgb(var(--c-bone)/.05);
+  text-align:center; margin-top:var(--s-8); user-select:none}
+
+/* ── REVELAÇÃO AO ROLAR ────────────────────────────────────────────────── */
+.rv{opacity:0; transform:translateY(1.75rem);
+  transition:opacity var(--d-slow) var(--e-out), transform var(--d-slow) var(--e-out)}
+.rv.in{opacity:1; transform:none}
+.rv[data-d="1"]{transition-delay:90ms}
+.rv[data-d="2"]{transition-delay:180ms}
+.rv[data-d="3"]{transition-delay:270ms}
+
+/* ── RESPONSIVO ────────────────────────────────────────────────────────── */
+@media (min-width:640px){
+  .manifesto__cols{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr}
+  .plans{grid-template-columns:1fr 1fr}
+  .quotes{grid-template-columns:1fr 1fr}
+  .foot__grid{grid-template-columns:1fr 1fr}
+  .foot__bar{flex-direction:row; align-items:center; justify-content:space-between}
+}
+@media (min-width:900px){
+  .nav__burger{display:none}
+  .manifesto__grid{grid-template-columns:1fr 1.15fr; gap:var(--s-9); align-items:start}
+  .steps{grid-template-columns:repeat(4,1fr)}
+  .plans{grid-template-columns:repeat(3,1fr)}
+  .quotes{grid-template-columns:repeat(3,1fr)}
+  .foot__grid{grid-template-columns:1.4fr 1fr 1fr 1fr}
+}
+@media (max-width:899px){
+  .nav__links{display:none}
+  .nav__burger{display:flex}
+  .hero__stats{grid-template-columns:1fr 1fr; gap:var(--s-5)}
+  .scrollcue{display:none}
+}
+
+/* ── MOVIMENTO REDUZIDO ────────────────────────────────────────────────── */
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1; transform:none}
+  .marquee__track{animation:none}
+  .hero__media img{transform:none !important}
+  *,*::before,*::after{
+    animation-duration:.01ms !important; animation-iteration-count:1 !important;
+    transition-duration:.01ms !important; scroll-behavior:auto !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ══════════════ NAVEGAÇÃO ══════════════ -->
+<header class="nav" id="nav" data-scrolled="false">
+  <div class="wrap nav__inner">
+    <a class="brand" href="#topo" aria-label="Vértice — início">
+      <svg class="brand__mark" viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 8 L58 56 H46 L32 30 Z" fill="#FF4E1B"/>
+        <path d="M32 8 L32 30 L18 56 H6 Z" fill="#FF6B3D"/>
+      </svg>
+      <span>
+        <span class="brand__name">VÉRTICE</span>
+        <span class="brand__sub">STUDIO DE PERFORMANCE</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" aria-label="Navegação principal">
+      <a class="nav__link" href="#studio">O studio</a>
+      <a class="nav__link" href="#metodo">Método</a>
+      <a class="nav__link" href="#estrutura">Estrutura</a>
+      <a class="nav__link" href="#planos">Planos</a>
+      <a class="nav__link" href="#duvidas">Dúvidas</a>
+      <a class="btn" href="#contato">
+        Agendar avaliação
+        <svg class="arw" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+      </a>
+    </nav>
+
+    <button class="nav__burger" id="burger" aria-expanded="false" aria-controls="drawer" aria-label="Abrir menu">
+      <span class="burger__box" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+</header>
+
+<div class="drawer" id="drawer" data-open="false">
+  <div class="drawer__inner">
+    <nav class="drawer__list" aria-label="Navegação móvel">
+      <a href="#studio">O studio</a>
+      <a href="#metodo">Método</a>
+      <a href="#estrutura">Estrutura</a>
+      <a href="#planos">Planos</a>
+      <a href="#duvidas">Dúvidas</a>
+      <a class="btn btn--lg" href="#contato">Agendar avaliação</a>
+    </nav>
+  </div>
+</div>
+
+<main id="topo">
+
+  <!-- ══════════════ HERO ══════════════ -->
+  <section class="hero" aria-labelledby="hero-t">
+    <div class="hero__media">
+      <img id="heroImg" src="assets/hero-sala.webp" alt="Salão de musculação do Vértice com rack de halteres em primeiro plano" width="1600" height="1067" fetchpriority="high">
+    </div>
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <div class="wrap hero__body">
+      <p class="eyebrow rv">Enseada do Suá · Vitória — ES</p>
+      <div class="meshwrap rv" data-d="1" id="meshwrap">
+        <h1 id="hero-t">Seu limite é só o <em>ponto de partida.</em></h1>
+        <canvas id="meshCanvas" aria-hidden="true"></canvas>
+      </div>
+      <p class="lede hero__lede rv" data-d="2">
+        Treino de força, mobilidade e condicionamento com avaliação física, prescrição
+        individual e acompanhamento de perto. Sem fórmula pronta.
+      </p>
+      <div class="hero__cta rv" data-d="3">
+        <a class="btn btn--lg" href="#contato">
+          Agendar avaliação gratuita
+          <svg class="arw" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a>
+        <a class="btn btn--ghost btn--lg" href="#estrutura">Conhecer o studio</a>
+      </div>
+
+      <dl class="hero__stats rv" data-d="3">
+        <div>
+          <dt class="stat__num"><span data-count="9">0</span></dt>
+          <dd class="stat__lbl">anos formando rotina de treino</dd>
+        </div>
+        <div>
+          <dt class="stat__num"><span data-count="740">0</span><span class="stat__suf">+</span></dt>
+          <dd class="stat__lbl">alunos que já passaram por aqui</dd>
+        </div>
+        <div>
+          <dt class="stat__num"><span data-count="620">0</span><span class="stat__suf">m²</span></dt>
+          <dd class="stat__lbl">de área de treino</dd>
+        </div>
+        <div>
+          <dt class="stat__num"><span data-count="12">0</span></dt>
+          <dd class="stat__lbl">profissionais no time técnico</dd>
+        </div>
+      </dl>
+    </div>
+
+    <span class="scrollcue" aria-hidden="true">Role</span>
+  </section>
+
+  <!-- ══════════════ MARQUEE ══════════════ -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <span class="marquee__item">Força</span><span class="marquee__item">Mobilidade</span>
+      <span class="marquee__item">Condicionamento</span><span class="marquee__item">Avaliação física</span>
+      <span class="marquee__item">Reabilitação</span><span class="marquee__item">Longevidade</span>
+    </div>
+    <div class="marquee__track">
+      <span class="marquee__item">Força</span><span class="marquee__item">Mobilidade</span>
+      <span class="marquee__item">Condicionamento</span><span class="marquee__item">Avaliação física</span>
+      <span class="marquee__item">Reabilitação</span><span class="marquee__item">Longevidade</span>
+    </div>
+  </div>
+
+  <!-- ══════════════ MANIFESTO ══════════════ -->
+  <section class="section light" id="studio" aria-labelledby="studio-t">
+    <div class="wrap">
+      <div class="manifesto manifesto__grid">
+        <div>
+          <p class="eyebrow rv">O studio</p>
+          <h2 id="studio-t" class="rv" data-d="1" style="margin-top:var(--s-5)">
+            Treinar bem é uma questão de <em>método</em>, não de sorte.
+          </h2>
+        </div>
+        <div class="manifesto__cols">
+          <p class="lede rv" data-d="2">
+            O Vértice nasceu de uma inconformidade: academias lotadas onde ninguém
+            corrige sua execução e a ficha de treino é a mesma há dois anos.
+          </p>
+          <p class="lede rv" data-d="3">
+            Aqui cada aluno começa por uma avaliação completa e recebe uma prescrição
+            que muda conforme o corpo responde. É mais trabalhoso — e é o que funciona.
+          </p>
+        </div>
+      </div>
+
+      <div class="manifesto__media">
+        <figure class="figure figure--tall rv">
+          <img src="assets/atleta-forca.webp" alt="Aluna do Vértice executando exercício de força em equipamento guiado" width="1100" height="1648" loading="lazy">
+        </figure>
+        <figure class="figure figure--tall rv" data-d="1">
+          <img src="assets/treino-halteres.webp" alt="Aluno retirando halteres do rack durante o treino" width="1100" height="1648" loading="lazy">
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ MÉTODO ══════════════ -->
+  <section class="section" id="metodo" aria-labelledby="metodo-t">
+    <div class="wrap">
+      <p class="eyebrow rv">Como funciona</p>
+      <h2 id="metodo-t" class="rv" data-d="1" style="font-size:var(--t-d2); max-width:20ch; margin-top:var(--s-5)">
+        Quatro etapas que se repetem em ciclo.
+      </h2>
+
+      <div class="steps">
+        <article class="step rv">
+          <p class="step__n">01</p>
+          <h3>Avaliação</h3>
+          <p>Composição corporal, mobilidade articular, histórico de lesões e objetivo real — não o que está na moda.</p>
+        </article>
+        <article class="step rv" data-d="1">
+          <p class="step__n">02</p>
+          <h3>Prescrição</h3>
+          <p>Um plano escrito para o seu corpo, sua agenda e seu ponto de partida. Com progressão definida.</p>
+        </article>
+        <article class="step rv" data-d="2">
+          <p class="step__n">03</p>
+          <h3>Execução</h3>
+          <p>Professor em sala o tempo todo. Correção de técnica na hora, porque carga sem execução é lesão.</p>
+        </article>
+        <article class="step rv" data-d="3">
+          <p class="step__n">04</p>
+          <h3>Reavaliação</h3>
+          <p>A cada oito semanas medimos de novo. O que evoluiu continua, o que travou muda.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ ESTRUTURA (BENTO) ══════════════ -->
+  <section class="section" id="estrutura" aria-labelledby="estrutura-t" style="padding-top:0">
+    <div class="wrap">
+      <p class="eyebrow rv">Estrutura</p>
+      <h2 id="estrutura-t" class="rv" data-d="1" style="font-size:var(--t-d2); max-width:18ch; margin-top:var(--s-5)">
+        Espaço pensado para treinar, não para posar.
+      </h2>
+
+      <div class="coverflow rv" id="coverflow" tabindex="0" role="group"
+           aria-roledescription="carrossel" aria-label="Ambientes do studio">
+        <div class="coverflow__stage">
+          <div class="coverflow__rail" id="cfRail">
+            <figure class="cf-card" data-title="Salão principal" data-desc="Musculação completa, cardio e área livre para trabalho funcional.">
+              <img src="assets/sala-principal.webp" alt="Sala principal de treino do Vértice com equipamentos de musculação e esteiras" width="1600" height="1494">
+            </figure>
+            <figure class="cf-card" data-title="Área de força" data-desc="Racks, plataforma e barras olímpicas para levantamentos pesados.">
+              <img src="assets/agachamento.webp" alt="Aluno executando agachamento com barra no rack" width="1600" height="1068" loading="lazy">
+            </figure>
+            <figure class="cf-card" data-title="Sala de mobilidade" data-desc="Aulas em turmas reduzidas — no máximo 8 pessoas por horário.">
+              <img src="assets/sala-mobilidade.webp" alt="Sala de mobilidade e aulas coletivas do Vértice, com colchonetes e espelhos" width="1600" height="1200" loading="lazy">
+            </figure>
+            <figure class="cf-card" data-title="Área de halteres" data-desc="Halteres de 2 a 50 kg, com bancos reguláveis em toda a fileira.">
+              <img src="assets/treino-halteres.webp" alt="Aluno retirando halteres do rack durante o treino" width="1100" height="1648" loading="lazy">
+            </figure>
+            <figure class="cf-card" data-title="Equipamentos guiados" data-desc="Máquinas para quem está começando ou retomando com segurança.">
+              <img src="assets/atleta-forca.webp" alt="Aluna do Vértice executando exercício de força em equipamento guiado" width="1100" height="1648" loading="lazy">
+            </figure>
+            <figure class="cf-card" data-title="Manutenção" data-desc="Equipamento revisado toda semana. Nada fora de operação.">
+              <img src="assets/detalhe-pegada.webp" alt="Detalhe de luva de pegada apoiada no equipamento" width="1400" height="931" loading="lazy">
+            </figure>
+          </div>
+        </div>
+
+        <div class="coverflow__ui">
+          <button class="cf-btn" id="cfPrev" type="button" aria-label="Ambiente anterior">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="cf-btn" id="cfNext" type="button" aria-label="Próximo ambiente">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <div class="cf-info" aria-live="polite">
+            <h3 id="cfTitle">Salão principal</h3>
+            <p id="cfDesc">Musculação completa, cardio e área livre para trabalho funcional.</p>
+          </div>
+          <div class="cf-dots" id="cfDots" role="tablist" aria-label="Escolher ambiente"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ PLANOS ══════════════ -->
+  <section class="section light" id="planos" aria-labelledby="planos-t">
+    <div class="wrap">
+      <p class="eyebrow rv">Planos</p>
+      <h2 id="planos-t" class="rv" data-d="1" style="font-size:var(--t-d2); max-width:16ch; margin-top:var(--s-5)">
+        Sem fidelidade de doze meses.
+      </h2>
+      <p class="lede rv" data-d="2" style="margin-top:var(--s-5)">
+        Todos os planos incluem avaliação física inicial e reavaliação a cada oito semanas.
+      </p>
+
+      <div class="plans">
+        <article class="plan rv">
+          <p class="plan__tag">Essencial</p>
+          <p class="plan__price">R$ 149<span>/mês</span></p>
+          <ul>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg> Musculação livre no horário que quiser</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg> Avaliação física inicial</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg> Ficha revisada a cada 8 semanas</li>
+          </ul>
+          <a class="btn btn--ghost" href="#contato">Começar</a>
+        </article>
+
+        <article class="plan plan--featured rv" data-d="1">
+          <span class="badge">Mais escolhido</span>
+          <p class="plan__tag">Performance</p>
+          <p class="plan__price">R$ 229<span>/mês</span></p>
+          <ul>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg> Tudo do Essencial</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg> Aulas de mobilidade ilimitadas</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg> Acompanhamento quinzenal com professor</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg> Relatório de evolução no app</li>
+          </ul>
+          <a class="btn" href="#contato">Começar</a>
+        </article>
+
+        <article class="plan rv" data-d="2">
+          <p class="plan__tag">Individual</p>
+          <p class="plan__price">R$ 480<span>/mês</span></p>
+          <ul>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg> Tudo do Performance</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg> 2 sessões semanais de personal</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg> Protocolo para lesão ou pós-operatório</li>
+          </ul>
+          <a class="btn btn--ghost" href="#contato">Começar</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ DEPOIMENTOS ══════════════ -->
+  <section class="section" aria-labelledby="dep-t">
+    <div class="wrap">
+      <p class="eyebrow rv">Quem treina aqui</p>
+      <h2 id="dep-t" class="rv" data-d="1" style="font-size:var(--t-d2); max-width:16ch; margin-top:var(--s-5)">
+        O que mudou de verdade.
+      </h2>
+
+      <div class="quotes">
+        <blockquote class="quote rv">
+          <div class="stars" aria-label="5 de 5 estrelas">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+          </div>
+          <p>Em quatro meses saí de zero flexão para dez. O que mudou foi ter alguém olhando a execução.</p>
+          <footer><span class="avatar" aria-hidden="true">CM</span><span><cite>Camila Moreira</cite><small>Aluna há 1 ano</small></span></footer>
+        </blockquote>
+
+        <blockquote class="quote rv" data-d="1">
+          <div class="stars" aria-label="5 de 5 estrelas">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+          </div>
+          <p>Cheguei com hérnia de disco e medo de treinar. Hoje agacho com carga e sem dor.</p>
+          <footer><span class="avatar" aria-hidden="true">RA</span><span><cite>Rodrigo Alencar</cite><small>Aluno há 2 anos</small></span></footer>
+        </blockquote>
+
+        <blockquote class="quote rv" data-d="2">
+          <div class="stars" aria-label="5 de 5 estrelas">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.9 7.5.7-5.6 5 1.6 7.4L12 18l-6.5 4 1.6-7.4-5.6-5 7.5-.7z"/></svg>
+          </div>
+          <p>Tenho 61 anos. Procurava um lugar que não me tratasse como frágil nem como atleta. Achei.</p>
+          <footer><span class="avatar" aria-hidden="true">VS</span><span><cite>Vera Santiago</cite><small>Aluna há 8 meses</small></span></footer>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ FAQ ══════════════ -->
+  <section class="section light" id="duvidas" aria-labelledby="faq-t">
+    <div class="wrap" style="max-width:52rem">
+      <p class="eyebrow rv">Dúvidas</p>
+      <h2 id="faq-t" class="rv" data-d="1" style="font-size:var(--t-d2); margin-top:var(--s-5)">
+        Antes de você perguntar.
+      </h2>
+
+      <div class="faq rv" data-d="2">
+        <details>
+          <summary>Preciso já ter experiência com musculação? <span class="ind" aria-hidden="true"></span></summary>
+          <p class="faq__a">Não. Metade dos nossos alunos nunca tinha pisado numa academia. A avaliação inicial existe justamente para definir um ponto de partida seguro.</p>
+        </details>
+        <details>
+          <summary>Como funciona a avaliação gratuita? <span class="ind" aria-hidden="true"></span></summary>
+          <p class="faq__a">São cerca de 50 minutos: conversa sobre histórico e objetivo, medidas de composição corporal e testes de mobilidade. Você sai com um diagnóstico por escrito, mesmo que decida não fechar plano.</p>
+        </details>
+        <details>
+          <summary>Atendem quem está se recuperando de lesão? <span class="ind" aria-hidden="true"></span></summary>
+          <p class="faq__a">Sim, desde que haja liberação e orientação do médico ou fisioterapeuta responsável. O trabalho com exercício complementa o tratamento — não substitui.</p>
+        </details>
+        <details>
+          <summary>Tem fidelidade ou multa por cancelamento? <span class="ind" aria-hidden="true"></span></summary>
+          <p class="faq__a">Não. Os planos são mensais e podem ser cancelados a qualquer momento, com aviso de 30 dias.</p>
+        </details>
+        <details>
+          <summary>Qual o horário de funcionamento? <span class="ind" aria-hidden="true"></span></summary>
+          <p class="faq__a">Segunda a sexta das 5h às 22h, sábado das 7h às 14h. Domingo fechado.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ CTA FINAL ══════════════ -->
+  <section class="section" id="contato" aria-labelledby="cta-t">
+    <div class="wrap">
+      <div class="cta rv">
+        <p class="eyebrow" style="justify-content:center">Primeiro passo</p>
+        <h2 id="cta-t" style="margin-top:var(--s-5)">Comece pela <em>avaliação.</em> Ela é gratuita.</h2>
+        <p class="lede" style="margin:var(--s-5) auto 0; text-align:center">
+          Sem compromisso e sem discurso de vendas. Você sai sabendo exatamente onde está.
+        </p>
+        <a class="btn btn--lg" href="#contato">
+          Agendar minha avaliação
+          <svg class="arw" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════════════ RODAPÉ ══════════════ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot__grid">
+      <div>
+        <a class="brand" href="#topo" aria-label="Vértice — início">
+          <svg class="brand__mark" viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 8 L58 56 H46 L32 30 Z" fill="#FF4E1B"/>
+            <path d="M32 8 L32 30 L18 56 H6 Z" fill="#FF6B3D"/>
+          </svg>
+          <span>
+            <span class="brand__name">VÉRTICE</span>
+            <span class="brand__sub">STUDIO DE PERFORMANCE</span>
+          </span>
+        </a>
+        <p style="margin-top:var(--s-5); max-width:30ch">
+          Método antes de carga. Constância antes de intensidade.
+        </p>
+      </div>
+
+      <div>
+        <h4>Navegar</h4>
+        <p><a href="#studio">O studio</a></p>
+        <p><a href="#metodo">Método</a></p>
+        <p><a href="#estrutura">Estrutura</a></p>
+        <p><a href="#planos">Planos</a></p>
+      </div>
+
+      <div>
+        <h4>Horários</h4>
+        <p>Segunda a sexta<br><span style="color:var(--fg)">05h às 22h</span></p>
+        <p>Sábado<br><span style="color:var(--fg)">07h às 14h</span></p>
+        <p>Domingo: fechado</p>
+      </div>
+
+      <div>
+        <h4>Onde estamos</h4>
+        <address>
+          Av. Nossa Senhora dos Navegantes, 675<br>
+          Enseada do Suá · Vitória — ES<br>
+          (27) 3000-0000
+        </address>
+      </div>
+    </div>
+
+    <div class="foot__bar">
+      <span class="demo-note">Projeto demonstrativo · dados fictícios</span>
+      <span>Vértice Studio de Performance é uma marca fictícia criada para demonstração.</span>
+    </div>
+
+    <p class="wordmark" aria-hidden="true">VÉRTICE</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  'use strict';
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Navbar: estado ao rolar ─────────────────────────────────────────── */
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.dataset.scrolled = String(window.scrollY > 24);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ── Menu móvel ──────────────────────────────────────────────────────── */
+  const burger = document.getElementById('burger');
+  const drawer = document.getElementById('drawer');
+  const setMenu = open => {
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+    drawer.dataset.open = String(open);
+  };
+  burger.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true'));
+  drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+
+  /* ── Revelação ao rolar ──────────────────────────────────────────────── */
+  const targets = document.querySelectorAll('.rv');
+  if (reduced || !('IntersectionObserver' in window)) {
+    targets.forEach(el => el.classList.add('in'));
+  } else {
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('in');
+        obs.unobserve(e.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    targets.forEach(el => io.observe(el));
+  }
+
+  /* ── Contadores animados ─────────────────────────────────────────────── */
+  const counters = document.querySelectorAll('[data-count]');
+  const runCount = el => {
+    const target = Number(el.dataset.count);
+    if (reduced) { el.textContent = String(target); return; }
+    const dur = 1400, t0 = performance.now();
+    const tick = now => {
+      const p = Math.min((now - t0) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);          // easeOutCubic
+      el.textContent = String(Math.round(target * eased));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  if ('IntersectionObserver' in window) {
+    const cio = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => { if (e.isIntersecting) { runCount(e.target); obs.unobserve(e.target); } });
+    }, { threshold: 0.6 });
+    counters.forEach(el => cio.observe(el));
+  } else {
+    counters.forEach(runCount);
+  }
+
+  /* ── Parallax suave do hero ──────────────────────────────────────────── */
+  const heroImg = document.getElementById('heroImg');
+  if (heroImg && !reduced) {
+    let ticking = false;
+    const parallax = () => {
+      const y = window.scrollY;
+      if (y < window.innerHeight * 1.2) heroImg.style.transform = `translate3d(0, ${y * 0.18}px, 0) scale(1.08)`;
+      ticking = false;
+    };
+    heroImg.style.transform = 'scale(1.08)';
+    addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(parallax); ticking = true; }
+    }, { passive: true });
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     CARROSSEL COVERFLOW
+     Galeria 3D: o card ativo fica de frente, os vizinhos recuam em
+     perspectiva. Clique num card, use as setas, o teclado ou arraste.
+     ══════════════════════════════════════════════════════════════════════ */
+  (() => {
+    const root = document.getElementById('coverflow');
+    const rail = document.getElementById('cfRail');
+    if (!root || !rail) return;
+
+    const cards = [...rail.querySelectorAll('.cf-card')];
+    const n = cards.length;
+    if (!n) return;
+
+    const TILT = 12, SIDE_TILT = 8, DEPTH = 240;
+    const SCALE_STEP = 0.16, MAX_VISIBLE = 2, SPREAD = 0.6;
+    const DUR = 600;
+
+    const titleEl = document.getElementById('cfTitle');
+    const descEl = document.getElementById('cfDesc');
+    const dotsEl = document.getElementById('cfDots');
+
+    let active = 0, locked = false;
+
+    cards.forEach((card, i) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'cf-dot';
+      dot.setAttribute('role', 'tab');
+      dot.setAttribute('aria-label', card.dataset.title || `Ambiente ${i + 1}`);
+      dot.addEventListener('click', () => go(i));
+      dotsEl.appendChild(dot);
+    });
+    const dots = [...dotsEl.children];
+
+    const layout = () => {
+      const cardW = cards[0].offsetWidth || 400;
+      cards.forEach((card, i) => {
+        let rel = i - active;
+        if (rel > n / 2) rel -= n;
+        if (rel < -n / 2) rel += n;
+
+        const ax = Math.abs(rel);
+        const visible = ax <= MAX_VISIBLE;
+        const scale = Math.max(0.4, 1 - ax * SCALE_STEP);
+
+        card.style.transform =
+          `translate(-50%,-50%) translateX(${rel * cardW * SPREAD}px) ` +
+          `translateZ(${-ax * DEPTH}px) rotateY(${-rel * TILT}deg) ` +
+          `rotateZ(${rel * SIDE_TILT}deg) scale(${scale})`;
+        card.style.opacity = visible ? '1' : '0';
+        card.style.pointerEvents = visible ? 'auto' : 'none';
+        card.dataset.active = String(rel === 0);
+        card.setAttribute('aria-hidden', String(!visible));
+      });
+
+      const cur = cards[active];
+      titleEl.textContent = cur.dataset.title || '';
+      descEl.textContent = cur.dataset.desc || '';
+      dots.forEach((d, i) => d.setAttribute('aria-current', String(i === active)));
+    };
+
+    function go(i) {
+      if (locked) return;
+      const next = ((i % n) + n) % n;
+      if (next === active) return;
+      if (!reduced) { locked = true; setTimeout(() => { locked = false; }, DUR); }
+      active = next;
+      layout();
+    }
+    const step = d => go(active + d);
+
+    cards.forEach((card, i) => card.addEventListener('click', () => {
+      if (card.dataset.active !== 'true') go(i);
+    }));
+    document.getElementById('cfPrev').addEventListener('click', () => step(-1));
+    document.getElementById('cfNext').addEventListener('click', () => step(1));
+
+    root.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); }
+    });
+
+    /* arraste / deslize no toque */
+    const stage = root.querySelector('.coverflow__stage');
+    let dragFrom = null;
+    stage.addEventListener('pointerdown', e => { dragFrom = e.clientX; });
+    stage.addEventListener('pointerup', e => {
+      if (dragFrom === null) return;
+      const dx = e.clientX - dragFrom;
+      dragFrom = null;
+      if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1);
+    });
+    stage.addEventListener('pointercancel', () => { dragFrom = null; });
+
+    addEventListener('resize', layout, { passive: true });
+    layout();
+  })();
+
+  /* ══════════════════════════════════════════════════════════════════════
+     MESH TEXT — distorção WebGL do título ao passar o cursor
+     O <h1> real continua no DOM e define a caixa; o canvas desenha por
+     cima. Sem WebGL2, em telas de toque ou com movimento reduzido, nada
+     acontece e o título aparece normalmente.
+     ══════════════════════════════════════════════════════════════════════ */
+  (() => {
+    const wrap = document.getElementById('meshwrap');
+    const h1 = document.getElementById('hero-t');
+    const canvas = document.getElementById('meshCanvas');
+    const hero = document.querySelector('.hero');
+    if (!wrap || !h1 || !canvas || !hero) return;
+    if (reduced) return;
+    /* `any-hover`/`any-pointer` em vez de `hover`/`pointer`: num notebook com
+       tela sensível ao toque o ponteiro *primário* costuma ser reportado como
+       grosseiro, o que desligava o efeito mesmo havendo mouse ou trackpad. */
+    if (!matchMedia('(any-hover: hover)').matches) return;
+    if (!matchMedia('(any-pointer: fine)').matches) return;
+
+    const gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: true });
+    if (!gl) return;
+
+    const GRID_W = 96, GRID_H = 40;
+    const DRAG = 1.8, SPRING_K = 0.08, DAMPING = 0.9, DT = 0.1, CHROMA = 0.005;
+
+    const VERT = `#version 300 es
+in vec2 aPos; in vec2 aUv; in vec2 aDisp;
+out vec2 vUv; out float vMag;
+void main(){ gl_Position = vec4(aPos + aDisp, 0.0, 1.0); vUv = aUv; vMag = length(aDisp); }`;
+
+    const FRAG = `#version 300 es
+precision highp float;
+in vec2 vUv; in float vMag; out vec4 outColor;
+uniform sampler2D uTex; uniform float uChroma;
+uniform vec3 uColorA; uniform vec3 uColorB;
+void main(){
+  vec4 base = texture(uTex, vUv);
+  if (uChroma > 0.0) {
+    float o = uChroma * ${CHROMA.toFixed(5)} * clamp(vMag * 8.0, 0.0, 1.0);
+    float aOff = texture(uTex, vUv + vec2(o, 0.0)).a;
+    float bOff = texture(uTex, vUv - vec2(o, 0.0)).a;
+    vec3 col = base.rgb;
+    col += uColorA * max(0.0, aOff - base.a);
+    col += uColorB * max(0.0, bOff - base.a);
+    outColor = vec4(col, max(base.a, max(aOff, bOff)));
+  } else { outColor = base; }
+}`;
+
+    const compile = (type, src) => {
+      const sh = gl.createShader(type);
+      gl.shaderSource(sh, src); gl.compileShader(sh);
+      if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+        console.error('Mesh shader:', gl.getShaderInfoLog(sh)); gl.deleteShader(sh); return null;
+      }
+      return sh;
+    };
+    const vs = compile(gl.VERTEX_SHADER, VERT);
+    const fs = compile(gl.FRAGMENT_SHADER, FRAG);
+    if (!vs || !fs) return;
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.error('Mesh program:', gl.getProgramInfoLog(prog)); return;
+    }
+
+    /* malha */
+    const vertCount = (GRID_W + 1) * (GRID_H + 1);
+    const positions = new Float32Array(vertCount * 2);
+    const uvs = new Float32Array(vertCount * 2);
+    for (let y = 0; y <= GRID_H; y++) {
+      for (let x = 0; x <= GRID_W; x++) {
+        const i = y * (GRID_W + 1) + x, u = x / GRID_W, v = y / GRID_H;
+        positions[i * 2] = u * 2 - 1; positions[i * 2 + 1] = 1 - v * 2;
+        uvs[i * 2] = u; uvs[i * 2 + 1] = v;
+      }
+    }
+    const indexCount = GRID_W * GRID_H * 6;
+    const indices = new Uint32Array(indexCount);
+    let k = 0;
+    for (let y = 0; y < GRID_H; y++) {
+      for (let x = 0; x < GRID_W; x++) {
+        const a = y * (GRID_W + 1) + x, b = a + 1, c = a + (GRID_W + 1), d = c + 1;
+        indices[k++] = a; indices[k++] = c; indices[k++] = b;
+        indices[k++] = b; indices[k++] = c; indices[k++] = d;
+      }
+    }
+    const disp = new Float32Array(vertCount * 2);
+    const vel = new Float32Array(vertCount * 2);
+
+    const aPos = gl.getAttribLocation(prog, 'aPos');
+    const aUv = gl.getAttribLocation(prog, 'aUv');
+    const aDisp = gl.getAttribLocation(prog, 'aDisp');
+    const uTex = gl.getUniformLocation(prog, 'uTex');
+    const uChroma = gl.getUniformLocation(prog, 'uChroma');
+    const uColorA = gl.getUniformLocation(prog, 'uColorA');
+    const uColorB = gl.getUniformLocation(prog, 'uColorB');
+
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const mkBuf = (data, loc, usage) => {
+      const b = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, b);
+      gl.bufferData(gl.ARRAY_BUFFER, data, usage);
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      return b;
+    };
+    mkBuf(positions, aPos, gl.STATIC_DRAW);
+    mkBuf(uvs, aUv, gl.STATIC_DRAW);
+    const dispBuf = mkBuf(disp, aDisp, gl.DYNAMIC_DRAW);
+    const idxBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuf);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+    /* trechos de texto lidos do próprio <h1>, cada um com sua cor */
+    const baseStyle = getComputedStyle(h1);
+    const tokens = [];
+    h1.childNodes.forEach(node => {
+      const text = node.textContent;
+      if (!text) return;
+      tokens.push({
+        text,
+        color: node.nodeType === 1 ? getComputedStyle(node).color : baseStyle.color,
+      });
+    });
+
+    /* desenha o título no canvas 2D, com quebra de linha gulosa (igual à do
+       navegador) para que o resultado case com a caixa real do <h1> */
+    const paint = (w, h, dpr) => {
+      const c2 = document.createElement('canvas');
+      c2.width = w; c2.height = h;
+      const ctx = c2.getContext('2d');
+      const cs = getComputedStyle(h1);
+      const size = parseFloat(cs.fontSize) * dpr;
+      const lineH = (parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.1) * dpr;
+
+      ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+      try { ctx.letterSpacing = cs.letterSpacing; } catch (_) { /* navegador antigo */ }
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+
+      const words = [];
+      tokens.forEach(t => t.text.split(/(\s+)/).forEach(s => { if (s) words.push({ s, color: t.color }); }));
+
+      const lines = [];
+      let cur = { parts: [], w: 0 };
+      for (const wd of words) {
+        const isSpace = /^\s+$/.test(wd.s);
+        const ww = ctx.measureText(wd.s).width;
+        if (!isSpace && cur.parts.length && cur.w + ww > w) { lines.push(cur); cur = { parts: [], w: 0 }; }
+        if (!cur.parts.length && isSpace) continue;
+        cur.parts.push({ s: wd.s, color: wd.color, x: cur.w });
+        cur.w += ww;
+      }
+      if (cur.parts.length) lines.push(cur);
+
+      const m = ctx.measureText('Hg');
+      const asc = m.fontBoundingBoxAscent || size * 0.8;
+      const dsc = m.fontBoundingBoxDescent || size * 0.2;
+      const halfLeading = (lineH - (asc + dsc)) / 2;
+
+      lines.forEach((ln, i) => {
+        const y = halfLeading + asc + i * lineH;
+        ln.parts.forEach(p => { ctx.fillStyle = p.color; ctx.fillText(p.s, p.x, y); });
+      });
+      return c2;
+    };
+
+    const sync = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = Math.max(2, Math.round(h1.offsetWidth * dpr));
+      const h = Math.max(2, Math.round(h1.offsetHeight * dpr));
+
+      canvas.style.left = h1.offsetLeft + 'px';
+      canvas.style.top = h1.offsetTop + 'px';
+      canvas.style.width = h1.offsetWidth + 'px';
+      canvas.style.height = h1.offsetHeight + 'px';
+
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w; canvas.height = h;
+        gl.viewport(0, 0, w, h);
+      }
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, paint(w, h, dpr));
+    };
+
+    /* desenha um quadro com o estado atual da malha */
+    const draw = () => {
+      gl.bindBuffer(gl.ARRAY_BUFFER, dispBuf);
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, disp);
+
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(prog);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.uniform1i(uTex, 0);
+      gl.uniform1f(uChroma, 1.0);
+      gl.uniform3f(uColorA, 1.0, 0.306, 0.106);   /* molten  #FF4E1B */
+      gl.uniform3f(uColorB, 1.0, 0.620, 0.478);   /* claro   #FF9E7A */
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl.bindVertexArray(vao);
+      gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_INT, 0);
+    };
+
+    /* cursor */
+    const cur = { x: 99, y: 99, px: 99, py: 99, vx: 0, vy: 0, inside: false };
+    hero.addEventListener('pointermove', e => {
+      const r = canvas.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      const x = ((e.clientX - r.left) / r.width) * 2 - 1;
+      const y = 1 - ((e.clientY - r.top) / r.height) * 2;
+      if (!cur.inside) { cur.px = x; cur.py = y; cur.inside = true; }
+      cur.x = x; cur.y = y;
+      wake();
+    }, { passive: true });
+    hero.addEventListener('pointerleave', () => {
+      cur.inside = false; cur.x = 99; cur.y = 99; cur.vx = 0; cur.vy = 0;
+      wake();   /* acorda para animar a volta ao repouso */
+    });
+
+    /* Loop sob demanda: dorme quando o cursor saiu e a malha voltou ao
+       lugar, e só acorda no próximo movimento. Sem isso o rAF rodaria a
+       60fps para sempre, gastando bateria à toa. */
+    let raf = 0, running = false, onScreen = true, settled = 0;
+
+    const tick = () => {
+      cur.vx = cur.x - cur.px;
+      cur.vy = cur.y - cur.py;
+      if (Math.hypot(cur.vx, cur.vy) > 0.3) { cur.vx = 0; cur.vy = 0; }
+      cur.px = cur.x; cur.py = cur.y;
+
+      let peak = 0;
+      for (let i = 0; i < vertCount; i++) {
+        const i2 = i * 2;
+        const dx = disp[i2], dy = disp[i2 + 1];
+        const cx = cur.x - (positions[i2] + dx);
+        const cy = cur.y - (positions[i2 + 1] + dy);
+        const prox = Math.max(0, 1 / (1 + Math.hypot(cx, cy) / 0.05) - 0.1);
+
+        let vx = vel[i2] + cur.vx * DRAG * prox;
+        let vy = vel[i2 + 1] + cur.vy * DRAG * prox;
+        vx = (vx - dx * SPRING_K) * DAMPING;
+        vy = (vy - dy * SPRING_K) * DAMPING;
+        vel[i2] = vx; vel[i2 + 1] = vy;
+
+        const ndx = Math.max(-1, Math.min(1, dx + vx * DT));
+        const ndy = Math.max(-1, Math.min(1, dy + vy * DT));
+        disp[i2] = ndx; disp[i2 + 1] = ndy;
+        const a = Math.abs(ndx), b = Math.abs(ndy);
+        if (a > peak) peak = a;
+        if (b > peak) peak = b;
+      }
+
+      draw();
+
+      if (!cur.inside && peak < 0.0004) settled++; else settled = 0;
+      if (settled > 20) { running = false; return; }
+      raf = requestAnimationFrame(tick);
+    };
+
+    function wake() {
+      if (running || !onScreen) return;
+      running = true; settled = 0;
+      raf = requestAnimationFrame(tick);
+    }
+    const sleep = () => { running = false; cancelAnimationFrame(raf); };
+
+    /* liga tudo depois que a fonte estiver pronta — senão o canvas 2D
+       desenha com a fonte de fallback do sistema */
+    const boot = () => {
+      sync();
+      wrap.dataset.mesh = 'on';
+      draw();                 /* primeiro quadro: o título precisa aparecer
+                                 mesmo que ninguém mova o cursor */
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(es => es.forEach(e => {
+          onScreen = e.isIntersecting;
+          onScreen ? wake() : sleep();
+        }), { threshold: 0 }).observe(hero);
+      }
+      new ResizeObserver(() => {
+        if (wrap.dataset.mesh === 'on') { sync(); draw(); }
+      }).observe(h1);
+    };
+    /* espera a fonte, mas no máximo 3s — se a rede engasgar, o efeito liga
+       do mesmo jeito em vez de nunca iniciar */
+    const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+    Promise.race([fontsReady, new Promise(r => setTimeout(r, 3000))])
+      .then(boot).catch(boot);
+  })();
+})();
+</script>
+</body>
+</html>

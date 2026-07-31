@@ -89,8 +89,10 @@ function Login({ onLogin }: { onLogin: (role: 'admin' | 'student', email: string
   async function enter(role: 'admin' | 'student') { setLoadingRole(role); setError(''); const message = await onLogin(role, '', ''); if (message) { setError(message); setLoadingRole(null) } }
   useEffect(() => { if (lockedRole) enter(lockedRole) }, [lockedRole])
   return <div className="login-page">
-    <section className="login-art"><img className="brand-logo" src={`${import.meta.env.BASE_URL}logo-vertice.svg`} alt="Vértice"/><p>Vértice</p><h1>Seu treino.<br/><em>Sua evolução.</em></h1><span>Acompanhamento próximo em cada etapa.</span></section>
-    <main className="login-card"><div className="mobile-brand"><img className="brand-logo small" src={`${import.meta.env.BASE_URL}logo-vertice.svg`} alt=""/> Vértice</div><p className="eyebrow">Demonstração</p><h2>Explore o Vértice</h2><p className="muted">Escolha um lado para ver o sistema por dentro — é um protótipo, não precisa de senha.</p>
+    <div className="login-backdrop"><img className="brand-logo" src={`${import.meta.env.BASE_URL}logo-vertice.svg`} alt="Vértice"/><p>Vértice</p><h1>Seu treino.<br/><em>Sua evolução.</em></h1><span>Acompanhamento próximo em cada etapa.</span></div>
+    <main className="login-card">
+      <a className="login-close" href=".." aria-label="Fechar e voltar ao site"><X size={18}/></a>
+      <div className="mobile-brand"><img className="brand-logo small" src={`${import.meta.env.BASE_URL}logo-vertice.svg`} alt=""/> Vértice</div><p className="eyebrow">Demonstração</p><h2>Explore o Vértice</h2><p className="muted">Escolha um lado para ver o sistema por dentro — é um protótipo, não precisa de senha.</p>
       {lockedRole
         ? <button className="primary wide big" disabled><Clock3 size={18}/> Carregando demonstração...</button>
         : <>

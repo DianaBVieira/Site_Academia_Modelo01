@@ -978,6 +978,7 @@ const foldImages: Partial<Record<FoldKey, string>> = {
   foldSubscapular: "measurement/subscapular.png",
   foldSuprailiac: "measurement/suprailiac.png",
   foldMidaxillary: "measurement/midaxillary.png",
+  foldBiceps: "measurement/biceps.png",
 };
 function durninCoefficients(sex: "male" | "female", age: number) {
   if (sex === "male") {

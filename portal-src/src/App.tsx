@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Activity, ArrowLeft, BarChart3, CalendarDays, Check, ChevronRight, CirclePause, CirclePlay, Clock3, Dumbbell, HeartPulse, LogOut, Plus, ShieldCheck, UserRound, Users, WalletCards, X } from 'lucide-react'
-import { sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { demoAdmin, demoStudent, workouts as initialWorkouts } from './demo'
@@ -84,18 +84,21 @@ function App() {
 function Login({ onLogin }: { onLogin: (role: 'admin' | 'student', email: string, password: string) => Promise<string | void> }) {
   const requestedRole = new URLSearchParams(window.location.search).get('role')
   const lockedRole: 'admin' | 'student' | null = requestedRole === 'admin' ? 'admin' : requestedRole === 'student' ? 'student' : null
-  const [role, setRole] = useState<'admin' | 'student'>(lockedRole || 'student')
-  const [email, setEmail] = useState(lockedRole === 'admin' ? 'dianabatistavieira@gmail.com' : '')
-  const [password, setPassword] = useState('')
+  const [loadingRole, setLoadingRole] = useState<'admin' | 'student' | null>(null)
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  async function submit() { setLoading(true); setError(''); const message = await onLogin(role, email, password); if (message) setError(message); setLoading(false) }
-  async function resetPassword() { if (!email) return setError('Informe seu e-mail primeiro.'); if (!auth) return; try { await sendPasswordResetEmail(auth, email); setError('Enviamos um link para você criar uma nova senha.') } catch { setError('Não foi possível enviar o e-mail. Confira o endereço informado.') } }
+  async function enter(role: 'admin' | 'student') { setLoadingRole(role); setError(''); const message = await onLogin(role, '', ''); if (message) { setError(message); setLoadingRole(null) } }
+  useEffect(() => { if (lockedRole) enter(lockedRole) }, [lockedRole])
   return <div className="login-page">
     <section className="login-art"><img className="brand-logo" src={`${import.meta.env.BASE_URL}logo-vertice.svg`} alt="Vértice"/><p>Vértice</p><h1>Seu treino.<br/><em>Sua evolução.</em></h1><span>Acompanhamento próximo em cada etapa.</span></section>
-    <main className="login-card"><div className="mobile-brand"><img className="brand-logo small" src={`${import.meta.env.BASE_URL}logo-vertice.svg`} alt=""/> Vértice</div><p className="eyebrow">{role === 'admin' ? 'Acesso administrativo' : 'Área do aluno'}</p><h2>Bem-vindo de volta</h2><p className="muted">{role === 'admin' ? 'Entre para gerenciar a academia.' : 'Entre para acessar seu acompanhamento.'}</p>
-      {!lockedRole&&<div className="role-switch"><button className={role === 'student' ? 'active' : ''} onClick={() => setRole('student')}><UserRound size={18}/> Aluno</button><button className={role === 'admin' ? 'active' : ''} onClick={() => setRole('admin')}><ShieldCheck size={18}/> Administrador</button></div>}
-      <label>E-mail<input key={role} value={email} onChange={event=>setEmail(event.target.value)} type="email" autoComplete="email" /></label><label>Senha<input value={password} onChange={event=>setPassword(event.target.value)} onKeyDown={event=>event.key==='Enter'&&submit()} type="password" autoComplete="current-password" /></label>{error&&<p className="login-feedback">{error}</p>}<button className="primary wide" disabled={loading||!email||!password} onClick={submit}>{loading?'Entrando...':<>Entrar {role === 'admin' ? 'como administrador' : 'na área do aluno'} <ChevronRight size={18}/></>}</button><button className="forgot-password" onClick={resetPassword}>Esqueci minha senha</button>
+    <main className="login-card"><div className="mobile-brand"><img className="brand-logo small" src={`${import.meta.env.BASE_URL}logo-vertice.svg`} alt=""/> Vértice</div><p className="eyebrow">Demonstração</p><h2>Explore o Vértice</h2><p className="muted">Escolha um lado para ver o sistema por dentro — é um protótipo, não precisa de senha.</p>
+      {lockedRole
+        ? <button className="primary wide big" disabled><Clock3 size={18}/> Carregando demonstração...</button>
+        : <>
+            <button className="primary wide big" disabled={loadingRole!==null} onClick={()=>enter('student')}>{loadingRole==='student'?'Entrando...':<><UserRound size={18}/> Entrar como aluno <ChevronRight size={18}/></>}</button>
+            <button className="secondary wide big" disabled={loadingRole!==null} onClick={()=>enter('admin')}>{loadingRole==='admin'?'Entrando...':<><ShieldCheck size={18}/> Entrar como administrador <ChevronRight size={18}/></>}</button>
+          </>}
+      {error&&<p className="login-feedback">{error}</p>}
+      <p className="demo-note">Protótipo de demonstração com dados fictícios — nada aqui é salvo de verdade.</p>
     </main>
   </div>
 }

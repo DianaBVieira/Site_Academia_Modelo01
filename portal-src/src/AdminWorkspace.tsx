@@ -970,6 +970,15 @@ const foldInfo: Record<
   foldSuprailiac: { label: "Supra-ilíaca", instruction: "Dobra diagonal acima da crista ilíaca, seguindo a linha natural da dobra.", x: 66, y: 52 },
   foldMidaxillary: { label: "Axilar média", instruction: "Dobra vertical na linha axilar média, na altura do apêndice xifoide.", x: 68, y: 42 },
 };
+const foldImages: Partial<Record<FoldKey, string>> = {
+  foldChest: "measurement/chest.png",
+  foldAbdominal: "measurement/abdominal.png",
+  foldThigh: "measurement/thigh.png",
+  foldTriceps: "measurement/triceps.png",
+  foldSubscapular: "measurement/subscapular.png",
+  foldSuprailiac: "measurement/suprailiac.png",
+  foldMidaxillary: "measurement/midaxillary.png",
+};
 function durninCoefficients(sex: "male" | "female", age: number) {
   if (sex === "male") {
     if (age < 17) return [1.1533, 0.0643];
@@ -1097,8 +1106,18 @@ function BodyFatProtocolTabs({
         </div>
         <div className="measurement-guide">
           <h3>Onde medir as dobras</h3>
-          <div className="body-map"><svg viewBox="0 0 200 360" role="img" aria-label="Ilustração anatômica dos pontos de medição"><defs><linearGradient id="skinToneTabs" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#e0bda5"/><stop offset="1" stopColor="#9f715e"/></linearGradient></defs><ellipse cx="100" cy="38" rx="25" ry="29" fill="url(#skinToneTabs)"/><path d="M72 72 Q100 58 128 72 L142 170 Q124 196 118 218 L128 334 Q113 346 101 334 L96 224 L91 334 Q76 345 65 332 L77 218 Q68 192 57 170Z" fill="url(#skinToneTabs)"/><path d="M67 82 Q48 91 42 126 L28 204 Q35 216 45 207 L65 139" fill="none" stroke="#b98771" strokeWidth="18" strokeLinecap="round"/><path d="M133 82 Q152 91 158 126 L172 204 Q165 216 155 207 L135 139" fill="none" stroke="#b98771" strokeWidth="18" strokeLinecap="round"/>{sites.map((key) => <g key={key}><circle cx={foldInfo[key].x * 2} cy={foldInfo[key].y * 3.4} r="7" fill="#39c765" stroke="white" strokeWidth="4"/><text x={foldInfo[key].x * 2 + (foldInfo[key].x > 60 ? -8 : 9)} y={foldInfo[key].y * 3.4 - 10} textAnchor={foldInfo[key].x > 60 ? "end" : "start"} fontSize="10" fontWeight="700" fill="#157f38">{foldInfo[key].label}</text></g>)}</svg></div>
-          <ul>{sites.map((key) => <li key={key}><strong>{foldInfo[key].label}:</strong> {foldInfo[key].instruction}</li>)}</ul>
+          <div className="fold-photo-grid">
+            {sites.map((key) => (
+              <figure className="fold-photo-card" key={key}>
+                {foldImages[key] ? (
+                  <img src={`${import.meta.env.BASE_URL}${foldImages[key]}`} alt={`Local de medição: ${foldInfo[key].label}`} loading="lazy" />
+                ) : (
+                  <div className="fold-photo-placeholder"><span>{foldInfo[key].label}</span></div>
+                )}
+                <figcaption><strong>{foldInfo[key].label}</strong><span>{foldInfo[key].instruction}</span></figcaption>
+              </figure>
+            ))}
+          </div>
         </div>
       </div>
       <div className="calculation-results">

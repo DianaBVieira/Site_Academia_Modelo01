@@ -1,0 +1,34 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function userDoc() { return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)); }
+    function isPlatformOwner() { return signedIn() && userDoc().data.role == 'owner'; }
+    function isAdminOfAcademy(academyId) { return signedIn() && userDoc().data.role == 'admin' && userDoc().data.academyId == academyId; }
+    function inAcademy(academyId) { return signedIn() && userDoc().data.academyId == academyId; }
+    function isImage() { return request.resource.contentType.matches('image/.*'); }
+    function isVideo() { return request.resource.contentType.matches('video/.*'); }
+
+    match /academies/{academyId}/exercise-media/{fileName} {
+      allow read: if isPlatformOwner() || inAcademy(academyId);
+      allow write: if (isPlatformOwner() || isAdminOfAcademy(academyId))
+        && (request.resource == null || (
+          request.resource.size < 50 * 1024 * 1024
+          && (isImage() || isVideo())
+        ));
+    }
+
+    match /academies/{academyId}/students/{studentId}/{allPaths=**} {
+      allow read: if isPlatformOwner() || isAdminOfAcademy(academyId)
+        || (signedIn() && request.auth.uid == studentId && inAcademy(academyId));
+      allow write: if (isPlatformOwner() || isAdminOfAcademy(academyId)
+          || (signedIn() && request.auth.uid == studentId && inAcademy(academyId)))
+        && (request.resource == null || (
+          request.resource.size < 10 * 1024 * 1024
+          && (isImage() || isVideo())
+        ));
+    }
+
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

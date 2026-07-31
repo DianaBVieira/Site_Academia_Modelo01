@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function userDoc() { return get(/databases/$(database)/documents/users/$(request.auth.uid)); }
+    function myRole() { return userDoc().data.role; }
+    function myAcademyId() { return userDoc().data.academyId; }
+    function isPlatformOwner() { return signedIn() && myRole() == 'owner'; }
+    function isAdminOfAcademy(academyId) { return signedIn() && myRole() == 'admin' && myAcademyId() == academyId; }
+    function isSelf(userId) { return signedIn() && request.auth.uid == userId; }
+    function inAcademy(academyId) { return signedIn() && myAcademyId() == academyId; }
+
+    match /users/{userId} {
+      function isAdminCreatingOwnStudent() {
+        return signedIn() && myRole() == 'admin'
+          && request.resource.data.role == 'student'
+          && request.resource.data.academyId == myAcademyId();
+      }
+      function isAdminOfExistingStudent() {
+        return signedIn() && myRole() == 'admin'
+          && resource.data.role == 'student'
+          && resource.data.academyId == myAcademyId();
+      }
+      allow read: if isPlatformOwner() || isSelf(userId) || isAdminOfExistingStudent();
+      allow create: if isPlatformOwner() || isAdminCreatingOwnStudent();
+      allow delete: if isPlatformOwner() || isAdminOfExistingStudent();
+      allow update: if isPlatformOwner() || isAdminOfExistingStudent() || (isSelf(userId)
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.academyId == resource.data.academyId);
+    }
+
+    match /academies/{academyId} {
+      allow read: if isPlatformOwner() || inAcademy(academyId);
+      allow write: if isPlatformOwner();
+
+      match /students/{studentId} {
+        allow read: if isPlatformOwner() || isAdminOfAcademy(academyId) || isSelf(studentId);
+        allow write: if isPlatformOwner() || isAdminOfAcademy(academyId);
+
+        match /health/{document=**} {
+          allow read: if isPlatformOwner() || isAdminOfAcademy(academyId) || isSelf(studentId);
+          allow create, update: if isPlatformOwner() || isAdminOfAcademy(academyId) || isSelf(studentId);
+          allow delete: if isPlatformOwner() || isAdminOfAcademy(academyId);
+        }
+        match /workouts/{document=**} {
+          allow read: if isPlatformOwner() || isAdminOfAcademy(academyId) || isSelf(studentId);
+          allow write: if isPlatformOwner() || isAdminOfAcademy(academyId);
+        }
+        match /workoutLogs/{document=**} {
+          allow read: if isPlatformOwner() || isAdminOfAcademy(academyId) || isSelf(studentId);
+          allow create, update: if isPlatformOwner() || isAdminOfAcademy(academyId) || isSelf(studentId);
+          allow delete: if isPlatformOwner() || isAdminOfAcademy(academyId);
+        }
+        match /measurements/{document=**} {
+          allow read: if isPlatformOwner() || isAdminOfAcademy(academyId) || isSelf(studentId);
+          allow write: if isPlatformOwner() || isAdminOfAcademy(academyId);
+        }
+        match /payments/{document=**} {
+          allow read: if isPlatformOwner() || isAdminOfAcademy(academyId) || isSelf(studentId);
+          allow write: if isPlatformOwner() || isAdminOfAcademy(academyId);
+        }
+      }
+
+      match /exercises/{exerciseId} {
+        allow read: if isPlatformOwner() || inAcademy(academyId);
+        allow write: if isPlatformOwner() || isAdminOfAcademy(academyId);
+      }
+
+      match /plans/{planId} {
+        allow read: if isPlatformOwner() || inAcademy(academyId);
+        allow write: if isPlatformOwner() || isAdminOfAcademy(academyId);
+      }
+
+      match /workoutTemplates/{templateId} {
+        allow read, write: if isPlatformOwner() || isAdminOfAcademy(academyId);
+      }
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

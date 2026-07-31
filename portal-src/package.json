@@ -1,0 +1,27 @@
+{
+  "name": "brothers-gestao-alunos",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "provision:academy": "node scripts/create-academy.mjs"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "firebase": "latest",
+    "lucide-react": "latest",
+    "recharts": "latest",
+    "vite": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "firebase-admin": "latest",
+    "typescript": "latest"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Meu Treino Adaptado",
+  "short_name": "Treino",
+  "description": "Gerenciador de exercícios visuais e adaptados focado em acessibilidade.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#F2ECD9",
+  "theme_color": "#3F5C3B",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/5061/5061386.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/5061/5061386.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

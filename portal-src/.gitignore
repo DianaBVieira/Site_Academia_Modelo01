@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+*.tsbuildinfo
+
+# Mídia (GIFs/imagens) do dataset traduzido — © Gym visual, sem licença pra
+# uso/distribuição pública (ver README.md e CLAUDE.md). NUNCA versionar isso
+# num repositório público. O texto traduzido (src/data/exercises-pt.json)
+# não tem esse problema e pode ser versionado normalmente.
+public/exercises-pt/images/
+public/exercises-pt/videos/
+
+# Chaves de service account do Firebase (usadas pelo script de provisionamento).
+# Nunca versionar: dão acesso administrativo total ao projeto Firebase.
+*serviceAccount*.json
+*service-account*.json

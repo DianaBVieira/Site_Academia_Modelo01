@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de Gestão — Vértice | Protótipo demonstrativo</title>
+<meta name="description" content="Protótipo do painel de gestão para academias: acompanhamento do aluno e administração de alunos, planos e pagamentos. Projeto demonstrativo criado pela Utopia Desenvolvimentos.">
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#0A0A0C">
+<!-- mesmo ícone embutido do index.html: sob file:// o Chrome recusa SVG externo como favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%230A0A0C'/%3E%3Cpath%20d='M32,12L55,54H44.5L32,32.5Z'%20fill='%23FF4E1B'/%3E%3Cpath%20d='M32,12L32,32.5L19.5,54H9Z'%20fill='%23FF6B3D'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Painel de Gestão — Vértice">
+<meta property="og:description" content="Protótipo de painel de gestão para academias: aluno e administrador. Criado pela Utopia Desenvolvimentos.">
+<meta property="og:locale" content="pt_BR">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   Tokens idênticos aos de index.html (mesmas cores, tipografia e escalas),
+   copiados aqui porque cada página do modelo é um arquivo único e portátil
+   — ver README.md, seção "Sem framework, sem build, sem dependências".
+   ═══════════════════════════════════════════════════════════════════════ */
+:root{
+  --c-obsidian: 10 10 12;
+  --c-carbon:   19 19 23;
+  --c-slate:    29 29 35;
+  --c-graphite: 58 58 66;
+  --c-ash:     154 150 143;
+  --c-stone:    90 86 80;
+  --c-sand:    220 213 202;
+  --c-bone:    239 234 227;
+  --c-white:   255 255 255;
+  --c-molten:  255  78  27;
+  --c-molten-hi:255 107  61;
+  --c-molten-deep:179 48 10;
+
+  --f-display:'Bricolage Grotesque','Arial Black',Impact,sans-serif;
+  --f-body:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+
+  --t-micro:  .6875rem;
+  --t-xs:     .75rem;
+  --t-sm:     .875rem;
+  --t-base:   1rem;
+  --t-lg:     clamp(1rem, .94rem + .28vw, 1.1875rem);
+  --t-xl:     clamp(1.125rem, 1rem + .52vw, 1.5rem);
+  --t-d4:     clamp(1.1875rem, .84rem + 1.43vw, 2.125rem);
+  --t-d3:     clamp(1.5rem, .99rem + 2.1vw, 2.875rem);
+  --t-d2:     clamp(1.75rem, .91rem + 3.43vw, 4rem);
+
+  --lead-tight:.94;
+  --lead-snug: 1.12;
+  --lead-body: 1.65;
+  --track-tight:-.02em;
+  --track-wide: .22em;
+
+  --s-1:.25rem;  --s-2:.5rem;   --s-3:.75rem;  --s-4:1rem;
+  --s-5:1.5rem;  --s-6:2rem;    --s-7:2.5rem;  --s-8:3rem;
+  --s-9:4rem;
+  --s-section: clamp(3rem, 2rem + 4vw, 6rem);
+  --s-gutter:  clamp(1.25rem, .7rem + 2vw, 2.5rem);
+  --w-max: 78rem;
+
+  --r-sm:.5rem; --r-md:.875rem; --r-lg:1.25rem;
+  --r-xl: clamp(1.25rem,.9rem + 1.4vw,2rem);
+  --r-full:999px;
+
+  --e-out: cubic-bezier(.16,1,.3,1);
+  --d-fast:160ms; --d-base:320ms;
+
+  --sh-sm: 0 2px 8px rgb(var(--c-obsidian)/.3);
+  --sh-md: 0 12px 32px -8px rgb(var(--c-obsidian)/.55);
+  --sh-glow: 0 12px 40px -10px rgb(var(--c-molten)/.55);
+
+  --nav-h: 4.5rem;
+
+  --bg:            rgb(var(--c-obsidian));
+  --bg-elevated:   rgb(var(--c-carbon));
+  --bg-raised:     rgb(var(--c-slate));
+  --fg:            rgb(var(--c-bone));
+  --fg-muted:      rgb(var(--c-ash));
+  --accent:        rgb(var(--c-molten));
+  --accent-hi:     rgb(var(--c-molten-hi));
+  --accent-on-light:rgb(var(--c-molten-deep));
+  --on-accent:     rgb(var(--c-obsidian));
+  --line:          rgb(var(--c-bone)/.14);
+  --line-strong:   rgb(var(--c-bone)/.28);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:var(--f-body); font-size:var(--t-base); line-height:var(--lead-body);
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit; color:inherit; background:none; border:0; cursor:pointer}
+a{color:inherit; text-decoration:none}
+h1,h2,h3,h4{font-family:var(--f-display); font-weight:800; line-height:var(--lead-snug); letter-spacing:var(--track-tight)}
+::selection{background:var(--accent); color:var(--on-accent)}
+
+:where(a,button,summary,[tabindex]):focus-visible{
+  outline:2px solid var(--accent); outline-offset:3px;
+  box-shadow:0 0 0 5px rgb(var(--c-obsidian)/.85);
+}
+
+.wrap{width:100%; max-width:var(--w-max); margin-inline:auto; padding-inline:var(--s-gutter)}
+.eyebrow{font-size:var(--t-xs); font-weight:600; text-transform:uppercase; letter-spacing:var(--track-wide);
+  color:var(--accent); display:flex; align-items:center; gap:var(--s-3)}
+.eyebrow::before{content:''; width:1.75rem; height:1px; background:currentColor; flex:none}
+.muted{color:var(--fg-muted)}
+
+/* ── BOTÕES (mesmos de index.html) ────────────────────────────────────── */
+.btn{
+  --btn-bg:var(--accent); --btn-fg:var(--on-accent); --btn-line:transparent;
+  display:inline-flex; align-items:center; justify-content:center; gap:var(--s-3);
+  min-height:2.75rem; padding:.75rem 1.4rem;
+  background:var(--btn-bg); color:var(--btn-fg);
+  border:1px solid var(--btn-line); border-radius:var(--r-full);
+  font-size:var(--t-sm); font-weight:600; letter-spacing:.02em; white-space:nowrap;
+  transition:transform var(--d-base) var(--e-out), box-shadow var(--d-base) var(--e-out),
+             background-color var(--d-base) var(--e-out), color var(--d-base) var(--e-out),
+             border-color var(--d-base) var(--e-out);
+}
+.btn:hover{transform:translateY(-2px); box-shadow:var(--sh-glow)}
+.btn:active{transform:translateY(0)}
+.btn--ghost{--btn-bg:transparent; --btn-fg:var(--fg); --btn-line:var(--line-strong)}
+.btn--ghost:hover{--btn-bg:rgb(var(--c-bone)); --btn-fg:rgb(var(--c-obsidian)); box-shadow:var(--sh-md)}
+.btn--sm{min-height:2.25rem; padding:.5rem 1rem; font-size:var(--t-xs)}
+.btn:disabled{opacity:.4; cursor:not-allowed; transform:none; box-shadow:none}
+
+/* ── CABEÇALHO DO PROTÓTIPO ───────────────────────────────────────────── */
+.pheader{position:sticky; top:0; z-index:50; background:rgb(var(--c-obsidian)/.92); backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line)}
+.pheader__inner{display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-4); height:auto; min-height:var(--nav-h);
+  padding-block:var(--s-3)}
+.pheader .brand{display:flex; align-items:center; gap:.6rem; flex:none}
+.pheader .brand__mark{width:1.6rem; height:1.6rem; flex:none}
+.pheader .brand__name{font-family:var(--f-display); font-weight:800; font-size:.95rem; letter-spacing:.06em}
+.pheader .brand__sub{display:block; font-size:.5rem; font-weight:500; letter-spacing:.3em; color:var(--fg-muted); margin-top:.15rem}
+.back{display:inline-flex; align-items:center; gap:.4rem; font-size:var(--t-xs); color:var(--fg-muted); transition:color var(--d-fast) ease}
+.back:hover{color:var(--fg)}
+.demo-note{display:inline-flex; align-items:center; gap:var(--s-2); padding:.4rem .8rem;
+  border:1px solid var(--line-strong); border-radius:var(--r-full); font-size:var(--t-micro);
+  letter-spacing:.08em; text-transform:uppercase; color:var(--fg-muted)}
+.demo-note::before{content:''; width:.4rem; height:.4rem; border-radius:50%; background:var(--accent); flex:none}
+
+/* ── ABAS DE PAPEL (ALUNO / ADMIN) ─────────────────────────────────────── */
+.roletabs{display:flex; gap:var(--s-2); margin-left:auto}
+.roletab{padding:.6rem 1.1rem; border-radius:var(--r-full); border:1px solid var(--line-strong);
+  font-size:var(--t-xs); font-weight:600; letter-spacing:.04em; color:var(--fg-muted);
+  transition:background-color var(--d-base) var(--e-out), color var(--d-base) var(--e-out), border-color var(--d-base) var(--e-out)}
+.roletab[aria-selected="true"]{background:var(--accent); color:var(--on-accent); border-color:transparent}
+
+.view{display:none; padding-block:var(--s-section)}
+.view[data-active="true"]{display:block}
+
+/* ── CARTÕES GENÉRICOS ─────────────────────────────────────────────────── */
+.card{background:var(--bg-elevated); border:1px solid var(--line); border-radius:var(--r-lg); padding:var(--s-6)}
+.grid{display:grid; gap:var(--s-4)}
+
+/* ── VISÃO DO ALUNO ────────────────────────────────────────────────────── */
+.student__head{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:var(--s-5)}
+.student__plan{display:inline-flex; align-items:center; gap:var(--s-3); padding:.5rem 1rem;
+  border:1px solid var(--line-strong); border-radius:var(--r-full); font-size:var(--t-xs)}
+.student__plan strong{color:var(--accent)}
+
+.week{display:grid; grid-template-columns:repeat(7,1fr); gap:var(--s-2); margin-top:var(--s-7)}
+.day{padding:var(--s-3) var(--s-2); border:1px solid var(--line); border-radius:var(--r-md); text-align:center}
+.day__lbl{font-size:var(--t-micro); text-transform:uppercase; letter-spacing:.08em; color:var(--fg-muted)}
+.day__title{font-size:var(--t-xs); margin-top:.35rem; line-height:1.3}
+.day[data-today="true"]{border-color:var(--accent); background:rgb(var(--c-molten)/.08)}
+.day[data-rest="true"] .day__title{color:var(--fg-muted)}
+
+.progress{margin-top:var(--s-6)}
+.progress__bar{height:.5rem; border-radius:var(--r-full); background:var(--bg-raised); overflow:hidden}
+.progress__fill{height:100%; background:var(--accent); border-radius:var(--r-full); width:0%;
+  transition:width var(--d-base) var(--e-out)}
+.progress__lbl{margin-top:var(--s-2); font-size:var(--t-xs); color:var(--fg-muted); display:flex; justify-content:space-between}
+
+.workout{margin-top:var(--s-8)}
+.workout__list{display:grid; gap:var(--s-3); margin-top:var(--s-5)}
+.exercise{display:grid; grid-template-columns:1fr auto; align-items:center; gap:var(--s-4);
+  padding:var(--s-5); border:1px solid var(--line); border-radius:var(--r-lg); background:var(--bg-elevated);
+  transition:border-color var(--d-base) var(--e-out), opacity var(--d-base) var(--e-out)}
+.exercise[data-done="true"]{opacity:.55; border-color:rgb(var(--c-bone)/.08)}
+.exercise__name{font-family:var(--f-display); font-weight:700; font-size:var(--t-base)}
+.exercise__meta{margin-top:.3rem; font-size:var(--t-xs); color:var(--fg-muted); display:flex; flex-wrap:wrap; gap:var(--s-3)}
+.exercise__actions{display:flex; align-items:center; gap:var(--s-3); flex-wrap:wrap; justify-content:flex-end}
+.check{width:2.25rem; height:2.25rem; flex:none; border-radius:50%; border:1px solid var(--line-strong);
+  display:grid; place-items:center; transition:background-color var(--d-base) var(--e-out), border-color var(--d-base) var(--e-out)}
+.exercise[data-done="true"] .check{background:var(--accent); border-color:transparent; color:var(--on-accent)}
+.timer{font-variant-numeric:tabular-nums; font-size:var(--t-sm); color:var(--fg-muted); min-width:3ch; text-align:right}
+.timer[data-running="true"]{color:var(--accent)}
+
+.body-history{margin-top:var(--s-8)}
+.bh__row{display:grid; grid-template-columns:5rem 1fr 4rem; align-items:center; gap:var(--s-4); margin-top:var(--s-3)}
+.bh__date{font-size:var(--t-xs); color:var(--fg-muted)}
+.bh__track{height:.5rem; border-radius:var(--r-full); background:var(--bg-raised); overflow:hidden}
+.bh__fill{height:100%; background:rgb(var(--c-bone)/.5); border-radius:var(--r-full)}
+.bh__row:last-child .bh__fill{background:var(--accent)}
+.bh__val{font-size:var(--t-xs); text-align:right; font-variant-numeric:tabular-nums}
+
+/* ── VISÃO DO ADMINISTRADOR ────────────────────────────────────────────── */
+.stats{display:grid; grid-template-columns:repeat(2,1fr); gap:var(--s-4)}
+.stat{padding:var(--s-5); border:1px solid var(--line); border-radius:var(--r-lg); background:var(--bg-elevated)}
+.stat__num{font-family:var(--f-display); font-size:var(--t-d3); font-weight:800; line-height:1}
+.stat__lbl{margin-top:.4rem; font-size:var(--t-xs); color:var(--fg-muted)}
+
+.filters{display:flex; gap:var(--s-2); flex-wrap:wrap; margin-top:var(--s-8)}
+.filter{padding:.5rem 1rem; border:1px solid var(--line-strong); border-radius:var(--r-full);
+  font-size:var(--t-xs); font-weight:600; color:var(--fg-muted);
+  transition:background-color var(--d-base) var(--e-out), color var(--d-base) var(--e-out)}
+.filter[aria-pressed="true"]{background:rgb(var(--c-bone)); color:rgb(var(--c-obsidian))}
+
+.tablewrap{margin-top:var(--s-5); overflow-x:auto; border:1px solid var(--line); border-radius:var(--r-lg)}
+table{width:100%; border-collapse:collapse; min-width:36rem}
+th,td{text-align:left; padding:var(--s-4) var(--s-5); font-size:var(--t-sm)}
+thead th{font-size:var(--t-xs); text-transform:uppercase; letter-spacing:.08em; color:var(--fg-muted); font-weight:600;
+  border-bottom:1px solid var(--line)}
+tbody tr{border-bottom:1px solid var(--line)}
+tbody tr:last-child{border-bottom:0}
+tbody tr:hover{background:rgb(var(--c-bone)/.03)}
+
+.tag{display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .7rem; border-radius:var(--r-full);
+  font-size:var(--t-micro); font-weight:600; letter-spacing:.04em; text-transform:uppercase}
+.tag::before{content:''; width:.4rem; height:.4rem; border-radius:50%; background:currentColor; flex:none}
+.tag--ativo{background:rgb(var(--c-molten)/.14); color:var(--accent)}
+.tag--pendente{background:rgb(var(--c-bone)/.1); color:var(--fg-muted)}
+.tag--vencido{background:rgb(var(--c-molten-deep)/.18); color:rgb(var(--c-molten-hi))}
+
+.plans-admin{display:grid; gap:var(--s-4); margin-top:var(--s-5)}
+.plan-admin{padding:var(--s-5); border:1px solid var(--line); border-radius:var(--r-lg); background:var(--bg-elevated)}
+.plan-admin__n{font-family:var(--f-display); font-size:var(--t-d3); font-weight:800}
+.plan-admin__lbl{font-size:var(--t-xs); color:var(--fg-muted); margin-top:.3rem}
+
+/* ── RESPONSIVO ────────────────────────────────────────────────────────── */
+@media (max-width:640px){
+  .week{grid-template-columns:repeat(4,1fr)}
+  .day:nth-child(n+5){display:none}
+  .exercise{grid-template-columns:1fr}
+  .exercise__actions{justify-content:flex-start; margin-top:var(--s-3)}
+}
+@media (min-width:640px){
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .plans-admin{grid-template-columns:repeat(3,1fr)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ÁREA DO ALUNO — port fiel do app real (portal-src/src/App.tsx +
+   styles.css). Mesma estrutura, mesmos componentes, mesmas interações;
+   só a cor mudou (verde #74de55/escuro #101411 da Brothers → laranja
+   #FF4E1B/obsidian #0A0A0C do Vértice — mesmo brilho/saturação de cada
+   tom, só girando o matiz, pra manter a hierarquia visual idêntica).
+   Namespace "sa-" (student area) pra não herdar nada do resto da página.
+   ═══════════════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
+.sa-shell{font-family:'DM Sans',sans-serif;color:#151815;--sa-accent:#FF4E1B;--sa-dark:#0A0A0C;--sa-muted:#6c716c;--sa-line:#e2e5df}
+.sa-shell *{box-sizing:border-box}
+.sa-shell button,.sa-shell input,.sa-shell textarea{font:inherit}
+.sa-shell button{cursor:pointer}
+.sa-page{max-width:1280px; margin:auto; padding:0 0 60px}
+.sa-eyebrow{text-transform:uppercase;letter-spacing:.2em;font-size:11px;font-weight:700;color:#9b5b31}
+.sa-muted{color:var(--sa-muted)}
+.sa-back{border:0;background:none;display:flex;align-items:center;gap:8px;color:var(--sa-muted);padding:0;margin-bottom:12px}
+
+/* saudação + card do plano */
+.sa-welcome{background:var(--sa-dark);color:#fff;padding:34px;border-radius:28px;margin-bottom:42px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.sa-welcome h1{font:600 clamp(32px,4vw,48px)/1.05 'Playfair Display';margin:5px 0}
+.sa-welcome p{color:#ffffffa0;margin:0}
+.sa-plan-card{background:#ffffff0d;border:1px solid #ffffff1a;border-radius:18px;padding:18px;min-width:220px;display:grid}
+.sa-plan-card span,.sa-plan-card small{font-size:11px;color:#ffffff80}
+.sa-plan-card strong{font-size:20px;margin:6px 0;color:var(--sa-accent)}
+
+/* grade da semana */
+.sa-section-title{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.sa-section-title h2{font:600 32px 'Playfair Display';margin:0}
+.sa-section-title p{color:var(--sa-muted);margin:4px 0 0}
+.sa-week-progress{font-size:12px;background:#f8e9e5;padding:10px 14px;border-radius:999px;white-space:nowrap}
+.sa-day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-top:20px}
+.sa-day-card{border:1px solid var(--sa-line);background:#fff;border-radius:18px;padding:18px;text-align:left;min-height:190px;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
+.sa-day-card:hover:not(.sa-rest){transform:translateY(-3px);box-shadow:0 12px 30px #0000000a}
+.sa-day-card.sa-rest{background:#eceeea;color:#8a8e89;cursor:default}
+.sa-day-top{display:flex;justify-content:space-between;color:#9b5c38}
+.sa-day-card h3{font-size:15px;margin:22px 0 6px}
+.sa-day-card p,.sa-day-card small{font-size:11px;color:var(--sa-muted)}
+.sa-day-card p{flex:1}
+.sa-mini-progress{height:5px;background:#e5e8e1;border-radius:10px;overflow:hidden}
+.sa-mini-progress i{display:block;height:100%;background:var(--sa-accent)}
+
+/* resumo do aluno */
+.sa-student-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.sa-student-summary article{background:#fff;border:1px solid var(--sa-line);border-radius:20px;padding:22px;display:flex;gap:15px}
+.sa-student-summary article>svg{color:#a36239;flex:none}
+.sa-student-summary div{display:grid}
+.sa-student-summary span,.sa-student-summary small{font-size:11px;color:var(--sa-muted)}
+.sa-student-summary strong{margin:6px 0}
+
+/* acesso ao histórico */
+.sa-history-access{width:100%;margin:14px 0 0;border:1px solid #e8cfc8;background:#f9edea;border-radius:18px;padding:16px 20px;display:flex;align-items:center;gap:14px;text-align:left;color:#6f4623}
+.sa-history-access>span{flex:1;display:grid}
+.sa-history-access small{color:#746154;margin-top:3px}
+
+/* visualização do treino do dia */
+.sa-workout-heading{margin-top:4px}
+.sa-workout-heading h1{font:600 clamp(32px,4vw,48px) 'Playfair Display';margin:7px 0}
+.sa-workout-progress{display:flex;align-items:center;gap:14px;margin:22px 0 28px}
+.sa-progress-bar{flex:1;height:8px;background:#e1e5de;border-radius:10px;overflow:hidden;margin:0}
+.sa-progress-bar i{display:block;height:100%;background:var(--sa-accent)}
+.sa-workout-progress>strong{min-width:46px;text-align:right;font-size:14px}
+.sa-exercise-list{display:grid;gap:10px}
+.sa-exercise-list>button{width:100%;display:flex;align-items:center;gap:16px;border:1px solid var(--sa-line);background:#fff;border-radius:18px;padding:18px;text-align:left}
+.sa-exercise-list>button.sa-completed{background:#f8eeeb;opacity:.8}
+.sa-exercise-number{width:46px;height:46px;flex:none;border-radius:14px;background:#f0f3ed;display:grid;place-items:center;font-weight:700}
+.sa-completed .sa-exercise-number{background:var(--sa-accent);color:#fff}
+.sa-exercise-info{flex:1}
+.sa-exercise-info span{font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#9d6242}
+.sa-exercise-info h3{margin:4px 0}
+.sa-exercise-info p{margin:0;color:var(--sa-muted);font-size:12px}
+.sa-set-dots{display:flex;gap:5px}
+.sa-set-dots i{width:10px;height:10px;border-radius:50%;background:#dfe2dc;display:block}
+.sa-set-dots i.sa-done{background:var(--sa-accent)}
+
+/* player do exercício */
+.sa-exercise-player{display:none;min-height:70vh;grid-template-columns:1fr 1fr;background:#fff;border-radius:24px;overflow:hidden;border:1px solid var(--sa-line);margin:0 calc(-1*var(--s-gutter))}
+.sa-exercise-player[data-sa-active="true"]{display:grid}
+.sa-player-media{background:#111512;position:relative;display:grid;place-items:center;color:#fff}
+.sa-close-player{position:absolute;top:24px;left:24px;width:44px;height:44px;border-radius:50%;border:1px solid #ffffff30;background:#0005;color:#fff;display:grid;place-items:center}
+.sa-media-placeholder{display:grid;place-items:center;gap:15px;color:#ffffff70}
+.sa-player-content{padding:clamp(28px,5vw,60px);align-self:center}
+.sa-player-content h1{font:600 clamp(32px,4vw,48px) 'Playfair Display';margin:10px 0}
+.sa-instructions{color:var(--sa-muted);line-height:1.7;margin:0}
+.sa-exercise-prescription{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0}
+.sa-exercise-prescription div{background:#f2f4f0;border-radius:14px;padding:15px;display:grid}
+.sa-exercise-prescription span{font-size:10px;text-transform:uppercase;color:var(--sa-muted)}
+.sa-exercise-prescription strong{margin-top:5px}
+.sa-series-line{display:flex;align-items:center;justify-content:space-between;gap:18px;border-top:1px solid var(--sa-line);padding-top:22px}
+.sa-series-status{flex:1}
+.sa-series-status>span{font-size:10px;text-transform:uppercase;color:var(--sa-muted)}
+.sa-series-status>strong{display:block;font-size:22px;margin:6px 0 14px}
+.sa-series-status div{display:flex;gap:8px}
+.sa-series-status i{width:36px;height:7px;border-radius:4px;background:#dfe2dc;display:block}
+.sa-series-status i.sa-done{background:var(--sa-accent)}
+.sa-start-series{white-space:nowrap;padding:12px 18px}
+.sa-active-controls{display:none;gap:12px;margin-top:18px}
+.sa-active-controls[data-sa-active="true"]{display:grid}
+.sa-timer{display:flex;align-items:center;gap:25px;background:var(--sa-dark);color:#fff;border-radius:20px;padding:22px}
+.sa-timer-circle{width:100px;height:100px;flex:none;border-radius:50%;border:6px solid var(--sa-accent);display:grid;place-items:center;align-content:center}
+.sa-timer-circle strong{font-size:25px}
+.sa-timer-circle span{font-size:10px;color:#ffffff80}
+.sa-timer-controls{display:grid;gap:8px}
+.sa-timer-controls button{border:0;background:none;color:#fff;display:flex;gap:8px;align-items:center;padding:0}
+.sa-finish-set{justify-self:end}
+.sa-done-message{display:none;background:#faede9;border-radius:18px;padding:18px;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;margin-top:25px}
+.sa-done-message[data-sa-visible="true"]{display:grid}
+.sa-done-message>svg{width:38px;height:38px;background:var(--sa-accent);color:#fff;padding:8px;border-radius:50%}
+.sa-done-message div{display:grid}
+.sa-done-message span{font-size:12px;color:var(--sa-muted)}
+
+/* modal — histórico corporal */
+.sa-overlay{position:fixed;inset:0;background:#071008b8;z-index:200;display:none;place-items:center;padding:18px}
+.sa-overlay[data-sa-open="true"]{display:grid}
+.sa-body-history{width:min(1050px,100%);max-height:calc(100dvh - 30px);overflow:auto;background:#fff;border-radius:24px;padding:24px;color:#151815}
+.sa-body-history>header{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+.sa-body-history h2{font:600 34px 'Playfair Display';margin:4px 0}
+.sa-body-history>header p{margin:4px 0;color:var(--sa-muted)}
+.sa-body-history>header>button{border:0;background:#eef0eb;width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center}
+.sa-history-metric-switch{display:flex;gap:7px;overflow-x:auto;margin:22px 0 12px}
+.sa-history-metric-switch button{border:0;border-radius:999px;background:#eef0eb;padding:9px 13px;white-space:nowrap;font-size:11px;color:#151815}
+.sa-history-metric-switch button.sa-active{background:var(--sa-dark);color:#fff}
+.sa-history-chart{border:1px solid var(--sa-line);border-radius:18px;padding:16px 8px;background:#fcfafa}
+.sa-history-table{margin-top:18px;min-width:760px;overflow-x:auto}
+.sa-history-table>div{display:grid;grid-template-columns:1.1fr repeat(7,1fr);gap:8px;padding:11px 10px;border-bottom:1px solid var(--sa-line);font-size:11px}
+.sa-history-table-head{background:#f0f3ee;color:var(--sa-muted);text-transform:uppercase;font-size:8px!important}
+.sa-all-measures{margin-top:18px;border:1px solid var(--sa-line);border-radius:15px;padding:14px}
+.sa-all-measures summary{cursor:pointer;font-weight:700}
+.sa-all-measures>div{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.sa-all-measures span{background:#f4f6f2;border-radius:10px;padding:11px;display:grid;font-size:10px;color:var(--sa-muted)}
+.sa-all-measures strong{font-size:13px;color:#0A0A0C;margin-top:3px}
+
+@media (max-width:900px){
+  .sa-day-grid{display:flex;overflow-x:auto;padding-bottom:8px}
+  .sa-day-card{min-width:150px}
+  .sa-student-summary{grid-template-columns:1fr}
+  .sa-exercise-player[data-sa-active="true"]{grid-template-columns:1fr}
+  .sa-player-media{min-height:260px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="pheader">
+  <div class="wrap pheader__inner">
+    <a class="brand" href="index.html" aria-label="Vértice — voltar ao site">
+      <svg class="brand__mark" viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 8 L58 56 H46 L32 30 Z" fill="#FF4E1B"/>
+        <path d="M32 8 L32 30 L18 56 H6 Z" fill="#FF6B3D"/>
+      </svg>
+      <span><span class="brand__name">VÉRTICE</span><span class="brand__sub">PAINEL DE GESTÃO</span></span>
+    </a>
+    <a class="back" href="index.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      Voltar ao site
+    </a>
+    <span class="demo-note">Protótipo · dados fictícios</span>
+    <div class="roletabs" role="tablist" aria-label="Escolher visão">
+      <button class="roletab" id="tabStudent" role="tab" aria-selected="true" aria-controls="viewStudent">Visão do aluno</button>
+      <button class="roletab" id="tabAdmin" role="tab" aria-selected="false" aria-controls="viewAdmin">Visão do administrador</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════════ VISÃO DO ALUNO ══════════════
+       Port fiel de portal-src/src/App.tsx (StudentDashboard, WorkoutView,
+       ExercisePlayer, BodyHistory) — mesma estrutura e interações do app
+       real da Brothers, recolorido pro Vértice. Ver CLAUDE.md. -->
+  <section class="wrap view" id="viewStudent" data-active="true" aria-label="Visão do aluno">
+    <div class="sa-shell">
+
+      <!-- tela 1 — painel do aluno -->
+      <main class="sa-page" id="saDashboard" data-sa-active="true">
+        <section class="sa-welcome">
+          <div><p class="sa-eyebrow">Sua semana</p><h1>Olá, Camila</h1><p>Um treino de cada vez. Sua evolução acontece aqui.</p></div>
+          <div class="sa-plan-card"><span>Plano atual</span><strong>Performance</strong><small>Vencimento em 21/08/2026</small></div>
+        </section>
+
+        <section>
+          <div class="sa-section-title"><div><h2>Treinos da semana</h2><p>Escolha o dia para visualizar sua ficha.</p></div><span class="sa-week-progress" id="saWeekProgress"></span></div>
+          <div class="sa-day-grid" id="saDayGrid" aria-label="Semana de treino"></div>
+        </section>
+
+        <section class="sa-student-summary">
+          <article>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
+            <div><span>Último peso</span><strong>72,4 kg</strong><small>-1,2 kg desde o início</small></div>
+          </article>
+          <article>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <div><span>Gordura estimada</span><strong>27,8%</strong><small>Última avaliação: 12/07</small></div>
+          </article>
+          <article>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg>
+            <div><span>Objetivos</span><strong>Fortalecimento • Mobilidade</strong><small>Evolução acompanhada</small></div>
+          </article>
+        </section>
+
+        <button class="sa-history-access" id="saHistoryBtn" type="button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
+          <span><strong>Acesse seu histórico</strong><small>Veja peso, medidas, composição corporal e gráficos de evolução</small></span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </main>
+
+      <!-- tela 2 — treino do dia -->
+      <main class="sa-page" id="saWorkout" data-sa-active="false" style="display:none">
+        <button class="sa-back" id="saBackToDashboard" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+          Minha semana
+        </button>
+        <div class="sa-workout-heading"><p class="sa-eyebrow" id="saWorkoutDay"></p><h1 id="saWorkoutTitle"></h1><p class="sa-muted">Siga a ordem sugerida ou escolha um exercício.</p></div>
+        <div class="sa-workout-progress"><div class="sa-progress-bar"><i id="saWorkoutProgressFill"></i></div><strong id="saWorkoutProgressPct"></strong></div>
+        <div class="sa-exercise-list" id="saExerciseList"></div>
+      </main>
+
+      <!-- tela 3 — player do exercício (dentro do treino) -->
+      <div class="sa-exercise-player" id="saPlayer" data-sa-active="false">
+        <div class="sa-player-media">
+          <button class="sa-close-player" id="saClosePlayer" type="button" aria-label="Fechar exercício">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+          <div class="sa-media-placeholder">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6M18.657 21.485a2 2 0 1 1-2.829-2.829l-1.767 1.768a2 2 0 1 1-2.829-2.828l6.364-6.364a2 2 0 1 1 2.829 2.828l-1.768 1.767a2 2 0 1 1 2.828 2.829Z"/><path d="M9.172 5.172a2 2 0 1 1-2.828-2.829l1.767 1.768a2 2 0 1 1 2.829 2.828L4.576 13.303a2 2 0 1 1-2.829-2.828l1.768-1.767a2 2 0 1 1-2.828-2.829Z"/></svg>
+            <span>Foto ou vídeo demonstrativo</span>
+          </div>
+        </div>
+        <div class="sa-player-content">
+          <p class="sa-eyebrow" id="saPlayerGroup"></p>
+          <h1 id="saPlayerName"></h1>
+          <p class="sa-instructions" id="saPlayerInstructions"></p>
+          <div class="sa-exercise-prescription">
+            <div><span>Séries</span><strong id="saPlayerSets"></strong></div>
+            <div><span>Repetições</span><strong id="saPlayerReps"></strong></div>
+            <div><span>Peso sugerido</span><strong id="saPlayerWeight"></strong></div>
+          </div>
+          <div class="sa-series-line">
+            <div class="sa-series-status">
+              <span>Série atual</span>
+              <strong id="saSeriesLabel"></strong>
+              <div id="saSeriesDots"></div>
+            </div>
+            <button class="sa-start-series" id="saStartSeries" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+              Iniciar série
+            </button>
+          </div>
+          <div class="sa-active-controls" id="saActiveControls" data-sa-active="false">
+            <div class="sa-timer">
+              <div class="sa-timer-circle"><strong id="saTimerLabel">60s</strong><span>descanso</span></div>
+              <div class="sa-timer-controls">
+                <button id="saTimerToggle" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg> <span id="saTimerToggleLabel">Continuar</span></button>
+                <button id="saTimerSkip" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 4 10 8-10 8V4ZM18 4v16"/></svg> Pular</button>
+              </div>
+            </div>
+            <button class="sa-finish-set" id="saFinishSet" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg> Concluir série
+            </button>
+          </div>
+          <div class="sa-done-message" id="saDoneMessage">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 6 6L20 6"/></svg>
+            <div><strong>Exercício concluído!</strong><span>Ótimo trabalho. Siga para o próximo exercício.</span></div>
+            <button class="sa-start-series" id="saBackToList" type="button">Voltar à lista</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- modal — histórico corporal -->
+    <div class="sa-overlay" id="saHistoryModal">
+      <section class="sa-body-history" role="dialog" aria-modal="true" aria-label="Histórico de evolução corporal">
+        <header>
+          <div><p class="sa-eyebrow">Sua evolução</p><h2>Histórico corporal</h2><p>Acompanhe cada avaliação e compare seu progresso.</p></div>
+          <button aria-label="Fechar" id="saCloseHistory" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </header>
+        <div class="sa-history-metric-switch" id="saMetricSwitch"></div>
+        <div class="sa-history-chart"><svg id="saChart" viewBox="0 0 600 260" width="100%" height="260" role="img" aria-label="Gráfico de evolução"></svg></div>
+        <div class="sa-history-table">
+          <div class="sa-history-table-head"><span>Data</span><span>Peso</span><span>Gordura</span><span>Massa muscular</span><span>Cintura</span><span>Abdômen</span><span>Quadril</span><span>Dobras</span></div>
+          <div id="saHistoryTableBody"></div>
+        </div>
+        <details class="sa-all-measures">
+          <summary>Ver todas as medidas da última avaliação</summary>
+          <div>
+            <span>Tórax <strong>95 cm</strong></span><span>Braço <strong>32,5 cm</strong></span><span>Coxa <strong>57,5 cm</strong></span>
+            <span>Panturrilha <strong>37,5 cm</strong></span><span>Soma das 7 dobras <strong>129 mm</strong></span><span>IMC estimado <strong>26,6</strong></span>
+          </div>
+        </details>
+      </section>
+    </div>
+  </section>
+
+  <!-- ══════════════ VISÃO DO ADMINISTRADOR ══════════════ -->
+  <section class="wrap view" id="viewAdmin" data-active="false" aria-label="Visão do administrador">
+    <p class="eyebrow">Painel administrativo</p>
+    <h1 style="font-size:var(--t-d2); margin-top:var(--s-4)">Visão geral do studio.</h1>
+
+    <div class="stats" style="margin-top:var(--s-7)">
+      <div class="stat"><p class="stat__num">187</p><p class="stat__lbl">Alunos ativos</p></div>
+      <div class="stat"><p class="stat__num">6</p><p class="stat__lbl">Vencendo esta semana</p></div>
+      <div class="stat"><p class="stat__num">R$ 34.280</p><p class="stat__lbl">Receita do mês</p></div>
+      <div class="stat"><p class="stat__num">9</p><p class="stat__lbl">Novos alunos este mês</p></div>
+    </div>
+
+    <div style="margin-top:var(--s-9)">
+      <p class="eyebrow">Alunos</p>
+      <div class="filters" id="filters" role="group" aria-label="Filtrar por situação">
+        <button class="filter" aria-pressed="true" data-filter="todos">Todos</button>
+        <button class="filter" aria-pressed="false" data-filter="ativo">Ativo</button>
+        <button class="filter" aria-pressed="false" data-filter="pendente">Pendente</button>
+        <button class="filter" aria-pressed="false" data-filter="vencido">Vencido</button>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Aluno</th><th>Plano</th><th>Vencimento</th><th>Situação</th></tr></thead>
+          <tbody id="studentsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="margin-top:var(--s-9)">
+      <p class="eyebrow">Planos</p>
+      <div class="plans-admin" id="plansAdmin"></div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ── Alternância entre visão do aluno e do administrador ──────────────── */
+  const tabStudent = document.getElementById('tabStudent');
+  const tabAdmin = document.getElementById('tabAdmin');
+  const viewStudent = document.getElementById('viewStudent');
+  const viewAdmin = document.getElementById('viewAdmin');
+  function selectRole(role) {
+    const student = role === 'student';
+    tabStudent.setAttribute('aria-selected', String(student));
+    tabAdmin.setAttribute('aria-selected', String(!student));
+    viewStudent.dataset.active = String(student);
+    viewAdmin.dataset.active = String(!student);
+  }
+  tabStudent.addEventListener('click', () => selectRole('student'));
+  tabAdmin.addEventListener('click', () => selectRole('admin'));
+
+  /* ══════════════════════════════════════════════════════════════════════
+     ÁREA DO ALUNO — port fiel de portal-src/src/App.tsx (StudentDashboard,
+     WorkoutView, ExercisePlayer, BodyHistory). Mesmos dados/estrutura do
+     app real, só os nomes trocados pro universo Vértice. Sem framework:
+     estado simples em variáveis, DOM atualizado na mão a cada mudança de
+     tela — o mesmo padrão do resto deste arquivo.
+     ══════════════════════════════════════════════════════════════════════ */
+  (() => {
+    // quarta-feira sempre aparece como "hoje" na demo, pra nunca cair
+    // num dia de descanso ao vivo — independente do dia real da semana
+    const WORKOUTS = [
+      { id: 'mon', weekday: 'Segunda', title: 'Pernas', status: 'available', exercises: [
+        { id: 'agachamento', name: 'Agachamento livre', group: 'Pernas', sets: 3, reps: 12, suggestedWeight: '40 kg', restSeconds: 75, instructions: 'Desça controlando o quadril para trás, mantenha os joelhos alinhados aos pés e não perca a curvatura natural da lombar.', completedSets: 0 },
+        { id: 'legpress', name: 'Leg press 45°', group: 'Pernas', sets: 3, reps: 12, suggestedWeight: '90 kg', restSeconds: 60, instructions: 'Não trave os joelhos no topo e mantenha a lombar sempre apoiada no encosto.', completedSets: 0 },
+        { id: 'cadext', name: 'Cadeira extensora', group: 'Quadríceps', sets: 3, reps: 15, suggestedWeight: '25 kg', restSeconds: 45, instructions: 'Suba de forma controlada, pause um instante no topo e desça devagar.', completedSets: 0 },
+      ]},
+      { id: 'tue', weekday: 'Terça', title: 'Mobilidade', status: 'available', exercises: [
+        { id: 'mobquadril', name: 'Mobilidade de quadril', group: 'Mobilidade', sets: 2, reps: 10, suggestedWeight: 'Peso corporal', restSeconds: 30, instructions: 'Movimentos amplos e lentos, sem forçar além do seu limite confortável.', completedSets: 0 },
+        { id: 'gatocamelo', name: 'Gato-camelo', group: 'Coluna', sets: 2, reps: 12, suggestedWeight: 'Peso corporal', restSeconds: 30, instructions: 'Sincronize o movimento com a respiração, arredondando e arqueando a coluna devagar.', completedSets: 0 },
+      ]},
+      { id: 'wed', weekday: 'Quarta', title: 'Costas e ombros', status: 'available', exercises: [
+        { id: 'puxada', name: 'Puxada frontal', group: 'Costas', sets: 3, reps: 12, suggestedWeight: '32 kg', restSeconds: 60, instructions: 'Puxe a barra em direção ao peito, contraindo as escápulas, sem balançar o tronco.', completedSets: 0 },
+        { id: 'remada', name: 'Remada baixa', group: 'Costas', sets: 3, reps: 10, suggestedWeight: '28 kg', restSeconds: 60, instructions: 'Mantenha a coluna neutra e traga os cotovelos para trás, junto ao corpo.', completedSets: 0 },
+        { id: 'desenvolvimento', name: 'Desenvolvimento com halteres', group: 'Ombros', sets: 3, reps: 10, suggestedWeight: '10 kg', restSeconds: 75, instructions: 'Empurre os halteres para cima sem travar os cotovelos no topo do movimento.', completedSets: 0 },
+        { id: 'encolhimento', name: 'Encolhimento de ombros', group: 'Trapézio', sets: 3, reps: 15, suggestedWeight: '16 kg', restSeconds: 45, instructions: 'Suba os ombros em direção às orelhas e desça devagar, sem usar os braços.', completedSets: 0 },
+      ]},
+      { id: 'thu', weekday: 'Quinta', title: 'Descanso', status: 'rest', exercises: [] },
+      { id: 'fri', weekday: 'Sexta', title: 'Peito e tríceps', status: 'available', exercises: [
+        { id: 'supino', name: 'Supino reto com halteres', group: 'Peitoral', sets: 3, reps: 10, suggestedWeight: '14 kg', restSeconds: 75, instructions: 'Desça os halteres até a altura do peito, cotovelos em cerca de 45°.', completedSets: 0 },
+        { id: 'crucifixo', name: 'Crucifixo inclinado', group: 'Peitoral', sets: 3, reps: 12, suggestedWeight: '8 kg', restSeconds: 60, instructions: 'Mantenha um leve dobra nos cotovelos durante todo o movimento.', completedSets: 0 },
+        { id: 'triceps', name: 'Tríceps na polia', group: 'Tríceps', sets: 3, reps: 15, suggestedWeight: '20 kg', restSeconds: 45, instructions: 'Cotovelos fixos ao lado do corpo, estenda completamente sem travar.', completedSets: 0 },
+      ]},
+      { id: 'sat', weekday: 'Sábado', title: 'Funcional', status: 'available', exercises: [
+        { id: 'agachsalto', name: 'Agachamento com salto', group: 'Funcional', sets: 3, reps: 10, suggestedWeight: 'Peso corporal', restSeconds: 60, instructions: 'Aterrisse suavemente, absorvendo o impacto flexionando os joelhos.', completedSets: 0 },
+        { id: 'prancha', name: 'Prancha', group: 'Core', sets: 3, reps: 1, suggestedWeight: '40s', restSeconds: 45, instructions: 'Corpo alinhado da cabeça aos calcanhares, abdômen contraído.', completedSets: 0 },
+      ]},
+      { id: 'sun', weekday: 'Domingo', title: 'Descanso', status: 'rest', exercises: [] },
+    ];
+    const TODAY_ID = 'wed';
+
+    const BODY_HISTORY = [
+      { date: '10/04', weight: 75.1, bodyFat: 30.2, muscle: 48.8, waist: 86, abdomen: 92, hip: 104, folds: 148 },
+      { date: '12/05', weight: 74.3, bodyFat: 29.3, muscle: 49.2, waist: 84, abdomen: 90, hip: 103, folds: 141 },
+      { date: '14/06', weight: 73.2, bodyFat: 28.5, muscle: 49.7, waist: 82, abdomen: 88, hip: 102, folds: 135 },
+      { date: '12/07', weight: 72.4, bodyFat: 27.8, muscle: 50.1, waist: 80, abdomen: 86, hip: 101, folds: 129 },
+    ];
+    const METRIC_LABELS = { weight: 'Peso (kg)', bodyFat: 'Gordura (%)', muscle: 'Massa muscular (kg)' };
+
+    function dayProgress(day) {
+      if (!day.exercises.length) return 0;
+      return Math.round(day.exercises.filter(e => e.completedSets >= e.sets).length / day.exercises.length * 100);
+    }
+
+    /* ── tela 1: painel — grade da semana ──────────────────────────────── */
+    const dayGridEl = document.getElementById('saDayGrid');
+    const weekProgressEl = document.getElementById('saWeekProgress');
+
+    function renderDayGrid() {
+      dayGridEl.innerHTML = '';
+      const scheduled = WORKOUTS.filter(d => d.status !== 'rest').length;
+      weekProgressEl.textContent = `${scheduled} treinos programados`;
+      WORKOUTS.forEach(day => {
+        const isRest = day.status === 'rest';
+        const progress = dayProgress(day);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sa-day-card' + (isRest ? ' sa-rest' : '');
+        btn.innerHTML = `
+          <div class="sa-day-top"><span>${day.weekday.slice(0, 3)}</span>${isRest
+            ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'
+            : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6M4.6 4.6l4.8 4.8M19.4 19.4l-4.8-4.8"/><path d="m21 21-1.5-1.5M3 3l1.5 1.5"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.829l-1.767 1.768a2 2 0 1 1-2.829-2.828l6.364-6.364a2 2 0 1 1 2.829 2.828l-1.768 1.767a2 2 0 1 1 2.828 2.829Z"/></svg>'}
+          </div>
+          <h3>${day.title}</h3>
+          <p>${isRest ? 'Recupere-se para o próximo treino' : `${day.exercises.length || 1} atividades`}</p>
+          ${!isRest ? `<div class="sa-mini-progress"><i style="width:${progress}%"></i></div>` : ''}
+          <small>${isRest ? 'Dia de descanso' : `${progress}% concluído`}</small>`;
+        if (!isRest) btn.addEventListener('click', () => openWorkout(day));
+        dayGridEl.appendChild(btn);
+      });
+    }
+
+    /* ── tela 2: treino do dia ─────────────────────────────────────────── */
+    const dashboardEl = document.getElementById('saDashboard');
+    const workoutEl = document.getElementById('saWorkout');
+    const playerEl = document.getElementById('saPlayer');
+    let currentDay = null;
+
+    function openWorkout(day) {
+      currentDay = day;
+      dashboardEl.style.display = 'none';
+      workoutEl.style.display = '';
+      renderWorkout();
+    }
+    document.getElementById('saBackToDashboard').addEventListener('click', () => {
+      workoutEl.style.display = 'none';
+      dashboardEl.style.display = '';
+      renderDayGrid();
+    });
+
+    function renderWorkout() {
+      document.getElementById('saWorkoutDay').textContent = currentDay.weekday;
+      document.getElementById('saWorkoutTitle').textContent = currentDay.title;
+      const progress = dayProgress(currentDay);
+      document.getElementById('saWorkoutProgressFill').style.width = progress + '%';
+      document.getElementById('saWorkoutProgressPct').textContent = progress + '%';
+
+      const sorted = [...currentDay.exercises].sort((a, b) => Number(a.completedSets >= a.sets) - Number(b.completedSets >= b.sets));
+      const listEl = document.getElementById('saExerciseList');
+      listEl.innerHTML = '';
+      sorted.forEach((ex, i) => {
+        const done = ex.completedSets >= ex.sets;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sa-exercise-list-item' + (done ? ' sa-completed' : '');
+        btn.innerHTML = `
+          <span class="sa-exercise-number">${done ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 6 6L20 6"/></svg>' : String(i + 1).padStart(2, '0')}</span>
+          <div class="sa-exercise-info"><span>${ex.group}</span><h3>${ex.name}</h3><p>${ex.sets} séries × ${ex.reps} repetições • ${ex.suggestedWeight}</p></div>
+          <div class="sa-set-dots">${Array.from({ length: ex.sets }).map((_, j) => `<i class="${j < ex.completedSets ? 'sa-done' : ''}"></i>`).join('')}</div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>`;
+        btn.addEventListener('click', () => openPlayer(ex));
+        listEl.appendChild(btn);
+      });
+    }
+
+    /* ── tela 3: player do exercício (cronômetro real) ─────────────────── */
+    let activeExercise = null;
+    let timerId = null;
+    let timerSeconds = 0;
+    let sessionActive = false;
+
+    function openPlayer(ex) {
+      activeExercise = ex;
+      sessionActive = false;
+      document.getElementById('saPlayerGroup').textContent = ex.group;
+      document.getElementById('saPlayerName').textContent = ex.name;
+      document.getElementById('saPlayerInstructions').textContent = ex.instructions;
+      document.getElementById('saPlayerInstructions').style.display = '';
+      document.getElementById('saPlayerSets').textContent = ex.sets;
+      document.getElementById('saPlayerReps').textContent = ex.reps;
+      document.getElementById('saPlayerWeight').textContent = ex.suggestedWeight;
+      document.getElementById('saActiveControls').dataset.saActive = 'false';
+      document.getElementById('saDoneMessage').dataset.saVisible = 'false';
+      document.getElementById('saStartSeries').style.display = ex.completedSets >= ex.sets ? 'none' : '';
+      renderSeries();
+      // troca de tela, não empilha: some com a lista igual ao app real
+      // (App.tsx: "if(selected) return <ExercisePlayer .../>") — melhor
+      // pra celular, sem precisar rolar a lista inteira pra ver o player.
+      workoutEl.style.display = 'none';
+      playerEl.dataset.saActive = 'true';
+    }
+    function closePlayer() {
+      clearInterval(timerId); timerId = null;
+      playerEl.dataset.saActive = 'false';
+      workoutEl.style.display = '';
+      renderWorkout(); // reflete progresso atualizado na lista
+    }
+    document.getElementById('saClosePlayer').addEventListener('click', closePlayer);
+    document.getElementById('saBackToList').addEventListener('click', closePlayer);
+
+    function renderSeries() {
+      const ex = activeExercise;
+      document.getElementById('saSeriesLabel').textContent = `${Math.min(ex.completedSets + 1, ex.sets)} de ${ex.sets}`;
+      document.getElementById('saSeriesDots').innerHTML = Array.from({ length: ex.sets })
+        .map((_, i) => `<i class="${i < ex.completedSets ? 'sa-done' : ''}"></i>`).join('');
+    }
+
+    document.getElementById('saStartSeries').addEventListener('click', () => {
+      sessionActive = true;
+      document.getElementById('saPlayerInstructions').style.display = 'none';
+      document.getElementById('saStartSeries').style.display = 'none';
+      document.getElementById('saActiveControls').dataset.saActive = 'true';
+      startTimer(activeExercise.restSeconds);
+    });
+
+    function startTimer(seconds) {
+      clearInterval(timerId);
+      timerSeconds = seconds;
+      updateTimerLabel();
+      document.getElementById('saTimerToggleLabel').textContent = 'Pausar';
+      timerId = setInterval(() => {
+        timerSeconds -= 1;
+        updateTimerLabel();
+        if (timerSeconds <= 0) { clearInterval(timerId); timerId = null; }
+      }, 1000);
+    }
+    function updateTimerLabel() {
+      const m = Math.floor(Math.max(timerSeconds, 0) / 60), s = Math.max(timerSeconds, 0) % 60;
+      document.getElementById('saTimerLabel').textContent = `${m}:${String(s).padStart(2, '0')}`;
+    }
+    document.getElementById('saTimerToggle').addEventListener('click', () => {
+      if (timerId) { clearInterval(timerId); timerId = null; document.getElementById('saTimerToggleLabel').textContent = 'Continuar'; }
+      else { startTimer(timerSeconds); }
+    });
+    document.getElementById('saTimerSkip').addEventListener('click', () => { clearInterval(timerId); timerId = null; timerSeconds = 0; updateTimerLabel(); });
+
+    document.getElementById('saFinishSet').addEventListener('click', () => {
+      const ex = activeExercise;
+      ex.completedSets = Math.min(ex.sets, ex.completedSets + 1);
+      renderSeries();
+      if (ex.completedSets < ex.sets) {
+        startTimer(ex.restSeconds);
+      } else {
+        clearInterval(timerId); timerId = null;
+        document.getElementById('saActiveControls').dataset.saActive = 'false';
+        document.getElementById('saDoneMessage').dataset.saVisible = 'true';
+      }
+    });
+
+    /* ── modal: histórico corporal (gráfico em SVG, sem biblioteca) ─────── */
+    const historyModal = document.getElementById('saHistoryModal');
+    let currentMetric = 'weight';
+
+    document.getElementById('saHistoryBtn').addEventListener('click', () => { historyModal.dataset.saOpen = 'true'; renderHistory(); });
+    document.getElementById('saCloseHistory').addEventListener('click', () => { historyModal.dataset.saOpen = 'false'; });
+    historyModal.addEventListener('mousedown', e => { if (e.target === historyModal) historyModal.dataset.saOpen = 'false'; });
+
+    const metricSwitchEl = document.getElementById('saMetricSwitch');
+    Object.keys(METRIC_LABELS).forEach(key => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = METRIC_LABELS[key];
+      btn.className = key === currentMetric ? 'sa-active' : '';
+      btn.addEventListener('click', () => { currentMetric = key; renderHistory(); });
+      metricSwitchEl.appendChild(btn);
+    });
+
+    function renderHistory() {
+      [...metricSwitchEl.children].forEach(b => b.classList.toggle('sa-active', b.textContent === METRIC_LABELS[currentMetric]));
+
+      // gráfico de linha simples em SVG — mesma ideia do recharts do app real,
+      // só que desenhado na mão (sem dependência) pra manter o protótipo leve
+      const values = BODY_HISTORY.map(d => d[currentMetric]);
+      const min = Math.min(...values), max = Math.max(...values);
+      const pad = (max - min) * 0.15 || 1;
+      const yMin = min - pad, yMax = max + pad;
+      const W = 600, H = 260, L = 40, R = 20, T = 20, B = 30;
+      const x = i => L + (i / (BODY_HISTORY.length - 1)) * (W - L - R);
+      const y = v => T + (1 - (v - yMin) / (yMax - yMin)) * (H - T - B);
+      const points = values.map((v, i) => [x(i), y(v)]);
+      const path = points.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+      const gridLines = Array.from({ length: 4 }).map((_, i) => {
+        const gy = T + (i / 3) * (H - T - B);
+        return `<line x1="${L}" y1="${gy}" x2="${W - R}" y2="${gy}" stroke="#e3e7df" stroke-dasharray="3 3"/>`;
+      }).join('');
+      const dots = points.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="#FF4E1B" stroke="#fff" stroke-width="2"/>`).join('');
+      const labels = BODY_HISTORY.map((d, i) => `<text x="${x(i)}" y="${H - 8}" font-size="10" fill="#6c716c" text-anchor="middle">${d.date}</text>`).join('');
+      document.getElementById('saChart').innerHTML = `${gridLines}<path d="${path}" fill="none" stroke="#FF4E1B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${dots}${labels}`;
+
+      const tableBody = document.getElementById('saHistoryTableBody');
+      tableBody.innerHTML = [...BODY_HISTORY].reverse().map(d => `
+        <div><strong>${d.date}</strong><span>${d.weight} kg</span><span>${d.bodyFat}%</span><span>${d.muscle} kg</span><span>${d.waist} cm</span><span>${d.abdomen} cm</span><span>${d.hip} cm</span><span>${d.folds} mm</span></div>
+      `).join('');
+    }
+
+    renderDayGrid();
+  })();
+
+  /* ── Tabela de alunos (administrador) ──────────────────────────────────── */
+  const STUDENTS = [
+    { name: 'Camila Moreira', plan: 'Performance', due: '21/08/2026', status: 'ativo' },
+    { name: 'Rodrigo Alencar', plan: 'Individual', due: '02/09/2026', status: 'ativo' },
+    { name: 'Vera Santiago', plan: 'Essencial', due: '05/08/2026', status: 'pendente' },
+    { name: 'Bruno Kowalski', plan: 'Performance', due: '30/07/2026', status: 'vencido' },
+    { name: 'Ana Beatriz Lima', plan: 'Essencial', due: '14/08/2026', status: 'ativo' },
+    { name: 'Felipe Nogueira', plan: 'Individual', due: '18/08/2026', status: 'ativo' },
+    { name: 'Juliana Prado', plan: 'Performance', due: '28/07/2026', status: 'vencido' },
+    { name: 'Marcos Vinícius', plan: 'Essencial', due: '09/08/2026', status: 'pendente' },
+  ];
+  const TAG_LABEL = { ativo: 'Ativo', pendente: 'Pendente', vencido: 'Vencido' };
+  const studentsBody = document.getElementById('studentsBody');
+  STUDENTS.forEach(s => {
+    const tr = document.createElement('tr');
+    tr.dataset.status = s.status;
+    tr.innerHTML = `<td>${s.name}</td><td>${s.plan}</td><td>${s.due}</td>
+      <td><span class="tag tag--${s.status}">${TAG_LABEL[s.status]}</span></td>`;
+    studentsBody.appendChild(tr);
+  });
+
+  const filters = document.getElementById('filters');
+  filters.addEventListener('click', e => {
+    const btn = e.target.closest('[data-filter]');
+    if (!btn) return;
+    [...filters.children].forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    const filter = btn.dataset.filter;
+    [...studentsBody.children].forEach(tr => {
+      tr.style.display = (filter === 'todos' || tr.dataset.status === filter) ? '' : 'none';
+    });
+  });
+
+  /* ── Cartões de planos (contagem de alunos por plano) ─────────────────── */
+  const PLANS = [
+    { name: 'Essencial', price: 'R$ 149/mês', count: STUDENTS.filter(s => s.plan === 'Essencial').length },
+    { name: 'Performance', price: 'R$ 229/mês', count: STUDENTS.filter(s => s.plan === 'Performance').length },
+    { name: 'Individual', price: 'R$ 480/mês', count: STUDENTS.filter(s => s.plan === 'Individual').length },
+  ];
+  const plansAdmin = document.getElementById('plansAdmin');
+  PLANS.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'plan-admin';
+    el.innerHTML = `<p class="plan-admin__n">${p.count}</p><p class="plan-admin__lbl">${p.name} · ${p.price}</p>`;
+    plansAdmin.appendChild(el);
+  });
+})();
+</script>
+</body>
+</html>

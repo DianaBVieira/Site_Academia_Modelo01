@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://academia-brothers-vv.web.app/sitemap.xml

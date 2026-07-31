@@ -46,6 +46,30 @@ depoimentos · FAQ · chamada final · rodapé.
   `<details>` nativo (funciona sem JS), `prefers-reduced-motion` respeitado em
   todas as animações, e fallback para quem não tem WebGL2.
 
+## Painel de gestão (`portal-src/`)
+
+**Atualizado em 31/07/2026**: o painel de gestão deixou de ser recriado à mão em HTML/JS
+(`painel.html`, mantido só como histórico) e passou a ser uma **cópia direta do app real**
+usado pela Academia Brothers (`Site_gestão_Brothers/portal-src`) — mesmo código React,
+mesmas telas, mesma lógica, sem reescrever nada. Só duas coisas mudam:
+
+1. **Cores**: convertidas com a mesma técnica do site (gira o matiz de cada tom mantendo
+   brilho/saturação — verde `#74de55` → laranja `#FF4E1B`, escuro `#101411` → obsidian
+   `#0A0A0C`, e as ~49 variações derivadas no CSS).
+2. **Marca**: logo, imagem de capa do login e textos "Academia Brothers"/"Brothers"
+   trocados pelos equivalentes do Vértice.
+
+O `.env` está deliberadamente vazio (sem credenciais do Firebase) — isso ativa o **modo
+demonstração já embutido no app real** (`firebaseEnabled=false` em `src/firebase.ts`),
+com login/dados fictícios via `demo.ts` e `localStorage`. Nenhum risco de tocar nos dados
+reais da Brothers. Área do aluno (dashboard, treino, cronômetro, histórico corporal) e
+painel administrativo (alunos, planos, pagamentos, saúde, biblioteca de exercícios) vêm
+os dois prontos, testados, sem divergência do app real.
+
+Pra rodar: `cd portal-src && npm install && npm run build`, depois publicar o conteúdo de
+`portal-src/dist/` num caminho `/portal/` (o `vite.config.ts` usa `base: '/portal/'`,
+igual à Brothers).
+
 ## Créditos das imagens
 
 As fotos vêm do Wikimedia Commons e do Unsplash sob licenças que **exigem

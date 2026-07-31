@@ -1,5 +1,5 @@
-import type { UserProfile, WorkoutDay } from './types'
-import type { StudentRecord, MeasurementRecord, PaymentRecord, PlanRecord, WorkoutTemplateRecord } from './database'
+import type { UserProfile, WorkoutDay, HealthFormData } from './types'
+import type { StudentRecord, MeasurementRecord, PaymentRecord, PlanRecord, WorkoutTemplateRecord, ExerciseOverrideRecord } from './database'
 
 /* ── Dados fictícios para o modo demonstração (sem Firebase) ──────────────
    Usados quando VITE_FIREBASE_* está vazio (ver src/firebase.ts). Nada aqui
@@ -89,3 +89,17 @@ export const demoMeasurements: Record<string, MeasurementRecord[]> = {
 export const demoWorkoutTemplates: WorkoutTemplateRecord[] = [
   { id: 'tpl-fullbody', name: 'Full body — foco em força', days: workoutDaysForCamila },
 ]
+
+// só os alunos com healthCompleted:true em demoStudents têm ficha preenchida aqui
+export const demoHealthForms: Record<string, HealthFormData> = {
+  'aluna-camila': { conditions: ['Nenhuma condição conhecida'], medications: 'Nenhum', surgeries: 'Nenhuma', pain: 'Nenhuma dor relatada', mobility: 'Sem limitações', restrictions: 'Nenhuma', emergencyName: 'Marina Moreira (mãe)', emergencyPhone: '(27) 99900-1001', consent: true },
+  'aluno-rodrigo': { conditions: ['Lesão articular ou muscular'], medications: 'Anti-inflamatório sob demanda', surgeries: 'Nenhuma', pain: 'Dor lombar leve ao final do dia', mobility: 'Restrição para flexão lombar sob carga', restrictions: 'Liberado pelo ortopedista para treino de força supervisionado', emergencyName: 'Patrícia Alencar (esposa)', emergencyPhone: '(27) 99900-1002', consent: true },
+  'aluna-vera': { conditions: ['Hipertensão'], medications: 'Losartana 50mg 1x ao dia', surgeries: 'Nenhuma', pain: 'Nenhuma dor relatada', mobility: 'Leve rigidez articular pela manhã', restrictions: 'Evitar esforço isométrico prolongado', emergencyName: 'Carlos Santiago (filho)', emergencyPhone: '(27) 99900-1003', consent: true },
+  'aluno-bruno': { conditions: ['Nenhuma condição conhecida'], medications: 'Nenhum', surgeries: 'Nenhuma', pain: 'Nenhuma dor relatada', mobility: 'Sem limitações', restrictions: 'Nenhuma', emergencyName: 'Renata Kowalski (mãe)', emergencyPhone: '(27) 99900-1004', consent: true },
+  'aluno-felipe': { conditions: ['Nenhuma condição conhecida'], medications: 'Nenhum', surgeries: 'Nenhuma', pain: 'Nenhuma dor relatada', mobility: 'Sem limitações', restrictions: 'Nenhuma', emergencyName: 'Camila Nogueira (esposa)', emergencyPhone: '(27) 99900-1006', consent: true },
+  'aluna-juliana': { conditions: ['Gestação', 'Outra condição'], medications: 'Nenhum', surgeries: 'Cesárea (8 meses atrás)', pain: 'Desconforto lombar ocasional', mobility: 'Diástase abdominal em acompanhamento', restrictions: 'Acompanhamento conjunto com fisioterapeuta pélvica', emergencyName: 'Marcelo Prado (marido)', emergencyPhone: '(27) 99900-1007', consent: true },
+}
+
+// personalizações de exercícios feitas pela academia (nome/foto/vídeo próprios) —
+// vazio por padrão; o admin pode adicionar durante a demonstração.
+export const demoExerciseOverrides: Record<string, ExerciseOverrideRecord> = {}

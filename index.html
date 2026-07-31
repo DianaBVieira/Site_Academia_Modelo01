@@ -227,6 +227,9 @@ section[id]{scroll-margin-top:calc(var(--nav-h) + 1rem)}
   transition:transform var(--d-base) var(--e-out)}
 .nav__link:hover{color:var(--fg)}
 .nav__link:hover::after{transform:scaleX(1); transform-origin:left}
+.nav__link--highlight{font-weight:800; color:var(--accent)}
+.nav__link--highlight:hover{color:var(--accent-hi)}
+.drawer__list a.nav__link--highlight{color:var(--accent)}
 
 .nav__burger{display:none; width:2.75rem; height:2.75rem; border:1px solid var(--line-strong);
   border-radius:var(--r-full); align-items:center; justify-content:center; flex:none}
@@ -587,7 +590,7 @@ section[id]{scroll-margin-top:calc(var(--nav-h) + 1rem)}
       <a class="nav__link" href="#estrutura">Estrutura</a>
       <a class="nav__link" href="#planos">Planos</a>
       <a class="nav__link" href="#duvidas">Dúvidas</a>
-      <a class="nav__link" href="portal/">Painel de gestão</a>
+      <a class="nav__link nav__link--highlight" href="portal/">Painel de gestão</a>
       <a class="btn" href="#contato">
         Agendar avaliação
         <svg class="arw" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
@@ -608,7 +611,7 @@ section[id]{scroll-margin-top:calc(var(--nav-h) + 1rem)}
       <a href="#estrutura">Estrutura</a>
       <a href="#planos">Planos</a>
       <a href="#duvidas">Dúvidas</a>
-      <a href="portal/">Painel de gestão</a>
+      <a class="nav__link--highlight" href="portal/">Painel de gestão</a>
       <a class="btn btn--lg" href="#contato">Agendar avaliação</a>
     </nav>
   </div>

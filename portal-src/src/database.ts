@@ -12,7 +12,11 @@ import {
 } from 'firebase/storage'
 import { firebaseApp, db, firebaseEnabled, storage } from './firebase'
 import type { AcademyRecord, HealthFormData, PaymentSituation, WorkoutDayPlan, WorkoutDay } from './types'
-import { demoStudents, demoPlans, demoPayments, demoMeasurements, demoWorkoutTemplates } from './demo'
+import { demoStudents, demoPlans, demoPayments, demoMeasurements, demoWorkoutTemplates, demoHealthForms, demoExerciseOverrides } from './demo'
+
+function demoId(prefix: string) {
+  return `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
+}
 
 export type PaymentStatus = 'paid' | 'pending' | 'overdue' | 'cancelled'
 
@@ -148,12 +152,23 @@ export async function createStudentAccount(email: string) {
 }
 
 export async function createStudent(academyId: string, student: Omit<StudentRecord, 'id'>) {
+  if (!firebaseEnabled) {
+    const id = demoId('aluno')
+    demoStudents.push({ ...student, id })
+    return id
+  }
   const uid = await createStudentAccount(student.email)
   await saveStudent(academyId, { ...student, id: uid })
   return uid
 }
 
 export async function saveStudent(academyId: string, student: StudentRecord) {
+  if (!firebaseEnabled) {
+    const index = demoStudents.findIndex(s => s.id === student.id)
+    if (index >= 0) demoStudents[index] = student
+    else demoStudents.push(student)
+    return
+  }
   const store = database()
   const { id, ...data } = student
   const batch = writeBatch(store)
@@ -168,7 +183,10 @@ export async function saveStudent(academyId: string, student: StudentRecord) {
 }
 
 export async function listStudents(academyId: string) {
-  if (!firebaseEnabled) return demoStudents
+  // retorna uma cópia nova a cada chamada: se devolvesse a mesma referência
+  // do array mutável, o React (comparação por referência no useState) não
+  // percebe a mudança depois de cadastrar/editar um aluno e não re-renderiza.
+  if (!firebaseEnabled) return [...demoStudents]
   const snapshot = await getDocs(query(collection(database(), paths.students(academyId)), orderBy('name')))
   return snapshot.docs.map(item => ({ id: item.id, ...item.data() } as StudentRecord))
 }
@@ -180,6 +198,11 @@ export async function getStudent(academyId: string, uid: string) {
 }
 
 export async function deleteStudent(academyId: string, uid: string) {
+  if (!firebaseEnabled) {
+    const index = demoStudents.findIndex(s => s.id === uid)
+    if (index >= 0) demoStudents.splice(index, 1)
+    return
+  }
   const store = database()
   const batch = writeBatch(store)
   batch.delete(doc(store, paths.student(academyId, uid)))
@@ -188,6 +211,12 @@ export async function deleteStudent(academyId: string, uid: string) {
 }
 
 export async function saveHealthForm(academyId: string, uid: string, form: HealthFormData) {
+  if (!firebaseEnabled) {
+    demoHealthForms[uid] = form
+    const student = demoStudents.find(s => s.id === uid)
+    if (student) student.healthCompleted = true
+    return
+  }
   await setDoc(doc(database(), paths.health(academyId, uid)), {
     ...form, completedAt: serverTimestamp(), updatedAt: serverTimestamp(),
   }, { merge: true })
@@ -195,6 +224,7 @@ export async function saveHealthForm(academyId: string, uid: string, form: Healt
 }
 
 export async function getHealthForm(academyId: string, uid: string) {
+  if (!firebaseEnabled) return demoHealthForms[uid] || null
   const snapshot = await getDoc(doc(database(), paths.health(academyId, uid)))
   return snapshot.exists() ? snapshot.data() as HealthFormData : null
 }
@@ -205,8 +235,22 @@ async function addStudentDocument<T extends DocumentData>(academyId: string, uid
   })
 }
 
-export const addMeasurement = (academyId: string, uid: string, value: MeasurementRecord) => addStudentDocument(academyId, uid, 'measurements', value)
-export const addPayment = (academyId: string, uid: string, value: PaymentRecord) => addStudentDocument(academyId, uid, 'payments', value)
+export async function addMeasurement(academyId: string, uid: string, value: MeasurementRecord) {
+  if (!firebaseEnabled) {
+    if (!demoMeasurements[uid]) demoMeasurements[uid] = []
+    demoMeasurements[uid].unshift({ ...value, id: demoId('med') })
+    return
+  }
+  return addStudentDocument(academyId, uid, 'measurements', value)
+}
+export async function addPayment(academyId: string, uid: string, value: PaymentRecord) {
+  if (!firebaseEnabled) {
+    if (!demoPayments[uid]) demoPayments[uid] = []
+    demoPayments[uid].push({ ...value, id: demoId('pg') })
+    return
+  }
+  return addStudentDocument(academyId, uid, 'payments', value)
+}
 
 export async function listMeasurements(academyId: string, uid: string) {
   if (!firebaseEnabled) return [...(demoMeasurements[uid] || [])].reverse()
@@ -235,7 +279,7 @@ export async function saveWorkoutProgress(academyId: string, uid: string, workou
 export async function listPayments(academyId: string, uid: string, status?: PaymentStatus) {
   if (!firebaseEnabled) {
     const items = demoPayments[uid] || []
-    return status ? items.filter(p => p.status === status) : items
+    return status ? items.filter(p => p.status === status) : [...items]
   }
   const base = collection(database(), paths.payments(academyId, uid))
   const paymentQuery = status ? query(base, where('status', '==', status), orderBy('dueDate', 'desc')) : query(base, orderBy('dueDate', 'desc'))
@@ -244,6 +288,11 @@ export async function listPayments(academyId: string, uid: string, status?: Paym
 }
 
 export async function updatePaymentStatus(academyId: string, uid: string, paymentId: string, status: PaymentStatus) {
+  if (!firebaseEnabled) {
+    const payment = (demoPayments[uid] || []).find(p => p.id === paymentId)
+    if (payment) { payment.status = status; if (status === 'paid') payment.paidAt = new Date().toISOString().slice(0, 10) }
+    return
+  }
   await updateDoc(doc(database(), `${paths.payments(academyId, uid)}/${paymentId}`), {
     status, ...(status === 'paid' ? { paidAt: new Date().toISOString().slice(0, 10) } : {}), updatedAt: serverTimestamp(),
   })
@@ -252,12 +301,19 @@ export async function updatePaymentStatus(academyId: string, uid: string, paymen
 // --- Planos da academia ---
 
 export async function listPlans(academyId: string) {
-  if (!firebaseEnabled) return demoPlans
+  if (!firebaseEnabled) return [...demoPlans]
   const snapshot = await getDocs(query(collection(database(), paths.plans(academyId)), orderBy('name')))
   return snapshot.docs.map(item => ({ id: item.id, ...item.data() } as PlanRecord))
 }
 
 export async function savePlan(academyId: string, plan: PlanRecord) {
+  if (!firebaseEnabled) {
+    const id = plan.id || demoId('plano')
+    const index = demoPlans.findIndex(p => p.id === id)
+    if (index >= 0) demoPlans[index] = { ...plan, id }
+    else demoPlans.push({ ...plan, id })
+    return id
+  }
   const { id, ...data } = plan
   const reference = id ? doc(database(), `${paths.plans(academyId)}/${id}`) : doc(collection(database(), paths.plans(academyId)))
   await setDoc(reference, { ...data, updatedAt: serverTimestamp() }, { merge: true })
@@ -265,18 +321,30 @@ export async function savePlan(academyId: string, plan: PlanRecord) {
 }
 
 export async function removePlan(academyId: string, id: string) {
+  if (!firebaseEnabled) {
+    const index = demoPlans.findIndex(p => p.id === id)
+    if (index >= 0) demoPlans.splice(index, 1)
+    return
+  }
   await deleteDoc(doc(database(), `${paths.plans(academyId)}/${id}`))
 }
 
 // --- Modelos de treino ---
 
 export async function listWorkoutTemplates(academyId: string) {
-  if (!firebaseEnabled) return demoWorkoutTemplates
+  if (!firebaseEnabled) return [...demoWorkoutTemplates]
   const snapshot = await getDocs(collection(database(), paths.workoutTemplates(academyId)))
   return snapshot.docs.map(item => ({ id: item.id, ...item.data() } as WorkoutTemplateRecord))
 }
 
 export async function saveWorkoutTemplate(academyId: string, template: WorkoutTemplateRecord) {
+  if (!firebaseEnabled) {
+    const id = template.id || demoId('tpl')
+    const index = demoWorkoutTemplates.findIndex(t => t.id === id)
+    if (index >= 0) demoWorkoutTemplates[index] = { ...template, id }
+    else demoWorkoutTemplates.push({ ...template, id })
+    return id
+  }
   const { id, ...data } = template
   const reference = id ? doc(database(), `${paths.workoutTemplates(academyId)}/${id}`) : doc(collection(database(), paths.workoutTemplates(academyId)))
   await setDoc(reference, { ...data, updatedAt: serverTimestamp() }, { merge: true })
@@ -284,12 +352,18 @@ export async function saveWorkoutTemplate(academyId: string, template: WorkoutTe
 }
 
 export async function removeWorkoutTemplate(academyId: string, id: string) {
+  if (!firebaseEnabled) {
+    const index = demoWorkoutTemplates.findIndex(t => t.id === id)
+    if (index >= 0) demoWorkoutTemplates.splice(index, 1)
+    return
+  }
   await deleteDoc(doc(database(), `${paths.workoutTemplates(academyId)}/${id}`))
 }
 
 // --- Biblioteca de exercícios (personalizações por academia) ---
 
 export async function listExerciseOverrides(academyId: string) {
+  if (!firebaseEnabled) return demoExerciseOverrides
   const snapshot = await getDocs(collection(database(), paths.exercises(academyId)))
   const result: Record<string, ExerciseOverrideRecord> = {}
   snapshot.docs.forEach(item => { result[item.id] = { id: item.id, ...item.data() } as ExerciseOverrideRecord })
@@ -297,6 +371,7 @@ export async function listExerciseOverrides(academyId: string) {
 }
 
 export async function saveExerciseOverride(academyId: string, exerciseId: string | number, data: ExerciseOverrideRecord) {
+  if (!firebaseEnabled) { demoExerciseOverrides[String(exerciseId)] = data; return }
   const { id, ...rest } = data
   await setDoc(doc(database(), `${paths.exercises(academyId)}/${exerciseId}`), { ...rest, updatedAt: serverTimestamp() }, { merge: true })
 }
@@ -311,6 +386,9 @@ export async function uploadExerciseMedia(academyId: string, file: File, kind: '
   const allowed = kind === 'image' ? ALLOWED_IMAGE_TYPES : ALLOWED_VIDEO_TYPES
   if (!allowed.includes(file.type)) throw new Error(kind === 'image' ? 'Selecione um arquivo de imagem válido (JPEG, PNG, WEBP ou GIF).' : 'Selecione um arquivo de vídeo válido (MP4, WEBM ou MOV).')
   if (file.size > MAX_EXERCISE_MEDIA_BYTES) throw new Error('O arquivo excede o limite de 50 MB.')
+  // modo demonstração: sem Firebase Storage, só mostra uma prévia local do
+  // arquivo (não persiste entre sessões — é só pra visualizar durante a demo)
+  if (!firebaseEnabled) return URL.createObjectURL(file)
   const extension = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.')) : ''
   const fileName = `${crypto.randomUUID()}${extension}`
   const fileRef = ref(bucket(), `academies/${academyId}/exercise-media/${fileName}`)
@@ -319,5 +397,6 @@ export async function uploadExerciseMedia(academyId: string, file: File, kind: '
 }
 
 export async function deleteExerciseMedia(url: string) {
+  if (!firebaseEnabled) return
   try { await deleteObject(ref(bucket(), url)) } catch { /* arquivo já pode ter sido removido */ }
 }

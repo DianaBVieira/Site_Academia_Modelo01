@@ -2,3 +2,8 @@
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Mídia (GIFs/imagens) do dataset traduzido de exercícios — © Gym visual, sem
+# licença pra uso/distribuição pública (ver portal-src/README.md e CLAUDE.md).
+# O build do portal-src pode recriar essa pasta em portal/ — nunca versionar.
+portal/exercises-pt/
